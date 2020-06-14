@@ -57,4 +57,4 @@ dependencies {
 ```
 
 ## Sample project
-- 
+- [quarkus-sample](https://github.com/domaframework/quarkus-sample)
