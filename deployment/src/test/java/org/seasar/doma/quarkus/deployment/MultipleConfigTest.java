@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.test.QuarkusUnitTest;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -44,12 +44,12 @@ public class MultipleConfigTest {
 
   static class MyProducer {
 
-    @Singleton
+    @ApplicationScoped
     @org.seasar.doma.quarkus.Config("inventory")
     Config inventoryConfig(
         @io.quarkus.agroal.DataSource("inventory") AgroalDataSource dataSource,
         @Default DbConfig config) {
-      return config.newBuilder().setDataSource(dataSource).setDataSourceName("inventory").build();
+      return config.builder().setDataSource(dataSource).setDataSourceName("inventory").build();
     }
   }
 

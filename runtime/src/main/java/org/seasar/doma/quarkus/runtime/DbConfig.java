@@ -1,7 +1,6 @@
 package org.seasar.doma.quarkus.runtime;
 
 import java.util.Objects;
-import javax.enterprise.inject.Instance;
 import javax.sql.DataSource;
 import org.seasar.doma.jdbc.ClassHelper;
 import org.seasar.doma.jdbc.CommandImplementors;
@@ -37,7 +36,7 @@ public class DbConfig implements Config {
   private final MapKeyNaming mapKeyNaming;
   private final Commenter commenter;
   private final EntityListenerProvider entityListenerProvider;
-  private final Instance<TransactionManager> transactionManagerInstance;
+  private final TransactionManager transactionManager;
   private final String dataSourceName;
   private final int batchSize;
   private final int fetchSize;
@@ -60,7 +59,7 @@ public class DbConfig implements Config {
       MapKeyNaming mapKeyNaming,
       Commenter commenter,
       EntityListenerProvider entityListenerProvider,
-      Instance<TransactionManager> transactionManagerInstance,
+      TransactionManager transactionManager,
       String dataSourceName,
       int batchSize,
       int fetchSize,
@@ -81,7 +80,7 @@ public class DbConfig implements Config {
     this.mapKeyNaming = Objects.requireNonNull(mapKeyNaming);
     this.commenter = Objects.requireNonNull(commenter);
     this.entityListenerProvider = Objects.requireNonNull(entityListenerProvider);
-    this.transactionManagerInstance = Objects.requireNonNull(transactionManagerInstance);
+    this.transactionManager = transactionManager;
     this.dataSourceName = Objects.requireNonNull(dataSourceName);
     this.batchSize = batchSize;
     this.fetchSize = fetchSize;
@@ -156,10 +155,7 @@ public class DbConfig implements Config {
 
   @Override
   public TransactionManager getTransactionManager() {
-    if (transactionManagerInstance.isResolvable()) {
-      return transactionManagerInstance.get();
-    }
-    return null;
+    return transactionManager;
   }
 
   @Override
@@ -197,8 +193,30 @@ public class DbConfig implements Config {
     return queryTimeout;
   }
 
-  public Builder newBuilder() {
-    return new Builder(this);
+  public Builder builder() {
+    Builder builder = new Builder();
+    builder.dataSource = this.dataSource;
+    builder.dialect = this.dialect;
+    builder.sqlFileRepository = this.sqlFileRepository;
+    builder.scriptFileLoader = this.scriptFileLoader;
+    builder.jdbcLogger = this.jdbcLogger;
+    builder.requiresNewController = this.requiresNewController;
+    builder.classHelper = this.classHelper;
+    builder.commandImplementors = this.commandImplementors;
+    builder.queryImplementors = this.queryImplementors;
+    builder.exceptionSqlLogType = this.exceptionSqlLogType;
+    builder.unknownColumnHandler = this.unknownColumnHandler;
+    builder.naming = this.naming;
+    builder.mapKeyNaming = this.mapKeyNaming;
+    builder.commenter = this.commenter;
+    builder.entityListenerProvider = this.entityListenerProvider;
+    builder.transactionManager = this.transactionManager;
+    builder.dataSourceName = this.dataSourceName;
+    builder.batchSize = this.batchSize;
+    builder.fetchSize = this.fetchSize;
+    builder.maxRows = this.maxRows;
+    builder.queryTimeout = this.queryTimeout;
+    return builder;
   }
 
   public static class Builder {
@@ -218,37 +236,12 @@ public class DbConfig implements Config {
     private MapKeyNaming mapKeyNaming;
     private Commenter commenter;
     private EntityListenerProvider entityListenerProvider;
-    private Instance<TransactionManager> transactionManagerInstance;
+    private TransactionManager transactionManager;
     private String dataSourceName;
     private int batchSize;
     private int fetchSize;
     private int maxRows;
     private int queryTimeout;
-
-    Builder(DbConfig dbConfig) {
-      Objects.requireNonNull(dbConfig);
-      dataSource = dbConfig.dataSource;
-      dialect = dbConfig.dialect;
-      sqlFileRepository = dbConfig.sqlFileRepository;
-      scriptFileLoader = dbConfig.scriptFileLoader;
-      jdbcLogger = dbConfig.jdbcLogger;
-      requiresNewController = dbConfig.requiresNewController;
-      classHelper = dbConfig.classHelper;
-      commandImplementors = dbConfig.commandImplementors;
-      queryImplementors = dbConfig.queryImplementors;
-      exceptionSqlLogType = dbConfig.exceptionSqlLogType;
-      unknownColumnHandler = dbConfig.unknownColumnHandler;
-      naming = dbConfig.naming;
-      mapKeyNaming = dbConfig.mapKeyNaming;
-      commenter = dbConfig.commenter;
-      entityListenerProvider = dbConfig.entityListenerProvider;
-      transactionManagerInstance = dbConfig.transactionManagerInstance;
-      dataSourceName = dbConfig.dataSourceName;
-      batchSize = dbConfig.batchSize;
-      fetchSize = dbConfig.fetchSize;
-      maxRows = dbConfig.maxRows;
-      queryTimeout = dbConfig.queryTimeout;
-    }
 
     public Builder setDataSource(DataSource dataSource) {
       this.dataSource = dataSource;
@@ -325,9 +318,8 @@ public class DbConfig implements Config {
       return this;
     }
 
-    public Builder setTransactionManagerInstance(
-        Instance<TransactionManager> transactionManagerInstance) {
-      this.transactionManagerInstance = transactionManagerInstance;
+    public Builder setTransactionManager(TransactionManager transactionManager) {
+      this.transactionManager = transactionManager;
       return this;
     }
 
@@ -373,7 +365,7 @@ public class DbConfig implements Config {
           mapKeyNaming,
           commenter,
           entityListenerProvider,
-          transactionManagerInstance,
+          transactionManager,
           dataSourceName,
           batchSize,
           fetchSize,

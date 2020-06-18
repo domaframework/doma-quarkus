@@ -164,7 +164,7 @@ public class DomaProducer {
     return Objects.requireNonNull(exceptionSqlLogType);
   }
 
-  @Singleton
+  @ApplicationScoped
   @DefaultBean
   DbConfig dbConfig(
       DataSource dataSource,
@@ -199,7 +199,7 @@ public class DomaProducer {
         mapKeyNaming,
         commenter,
         entityListenerProvider,
-        transactionManager,
+        transactionManager.isResolvable() ? transactionManager.get() : null,
         dataSourceName,
         batchSize,
         fetchSize,
