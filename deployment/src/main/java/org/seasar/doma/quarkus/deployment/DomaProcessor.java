@@ -40,8 +40,8 @@ class DomaProcessor {
   }
 
   @BuildStep
-  ReflectiveClassBuildItem classes(BeanArchiveIndexBuildItem indexBuildItem) {
-    IndexView indexView = indexBuildItem.getIndex();
+  ReflectiveClassBuildItem classes(BeanArchiveIndexBuildItem beanArchiveIndex) {
+    IndexView indexView = beanArchiveIndex.getIndex();
     DomaClassScanner scanner = new DomaClassScanner(indexView);
     List<String> classes = scanner.scan();
     return new ReflectiveClassBuildItem(true, true, classes.toArray(new String[0]));
