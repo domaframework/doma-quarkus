@@ -39,6 +39,7 @@ public class DomaProducer {
   private volatile int fetchSize;
   private volatile int maxRows;
   private volatile int queryTimeout;
+  private volatile LogConfiguration logConfiguration;
 
   public void setSqlFileRepository(SqlFileRepository sqlFileRepository) {
     this.sqlFileRepository = Objects.requireNonNull(sqlFileRepository);
@@ -80,6 +81,10 @@ public class DomaProducer {
     this.queryTimeout = queryTimeout;
   }
 
+  public void setLogConfiguration(LogConfiguration logConfiguration) {
+    this.logConfiguration = Objects.requireNonNull(logConfiguration);
+  }
+
   @ApplicationScoped
   @DefaultBean
   Dialect dialect() {
@@ -101,7 +106,7 @@ public class DomaProducer {
   @ApplicationScoped
   @DefaultBean
   JdbcLogger jdbcLogger() {
-    return ConfigSupport.defaultJdbcLogger;
+    return new JBossJdbcLogger(Objects.requireNonNull(logConfiguration));
   }
 
   @ApplicationScoped

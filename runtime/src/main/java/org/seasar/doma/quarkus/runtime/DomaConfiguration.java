@@ -1,5 +1,6 @@
 package org.seasar.doma.quarkus.runtime;
 
+import io.quarkus.runtime.annotations.ConfigDocSection;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import java.util.Optional;
@@ -58,6 +59,9 @@ public class DomaConfiguration {
   @ConfigItem(defaultValue = "0")
   public int queryTimeout;
 
+  /** */
+  @ConfigItem @ConfigDocSection public LogConfiguration log;
+
   @Override
   public String toString() {
     return "DomaConfiguration{"
@@ -69,7 +73,7 @@ public class DomaConfiguration {
         + naming
         + ", exceptionSqlLogType="
         + exceptionSqlLogType
-        + ", dataSourceName="
+        + ", datasourceName="
         + datasourceName
         + ", batchSize="
         + batchSize
@@ -79,6 +83,8 @@ public class DomaConfiguration {
         + maxRows
         + ", queryTimeout="
         + queryTimeout
+        + ", log="
+        + log
         + '}';
   }
 

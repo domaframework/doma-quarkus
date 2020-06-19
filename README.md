@@ -32,6 +32,10 @@ quarkus.doma.batch-size=0
 quarkus.doma.fetch-size=0
 quarkus.doma.max-rows=0
 quarkus.doma.query-timeout=0
+
+quarkus.doma.log.sql=true
+quarkus.doma.log.dao=true
+quarkus.doma.log.closing-failure=true
 ```
 
 The above properties are all optional.
