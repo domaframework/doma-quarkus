@@ -37,7 +37,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <doma.version>2.37.0</doma.version>
-        <quarkus.version>1.5.1.Final</quarkus.version>
+        <quarkus.version>1.5.2.Final</quarkus.version>
         <spotless-plugin.version>1.31.2</spotless-plugin.version>
         <google-java-format.version>1.7</google-java-format.version>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
