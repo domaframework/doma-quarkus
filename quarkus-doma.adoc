@@ -1,0 +1,127 @@
+[.configuration-legend]
+icon:lock[title=Fixed at build time] Configuration property fixed at build time - All other configuration properties are overridable at runtime
+[.configuration-reference.searchable, cols="80,.^10,.^10"]
+|===
+
+h|[[quarkus-doma_configuration]]link:#quarkus-doma_configuration[Configuration property]
+
+h|Type
+h|Default
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.dialect]]`link:#quarkus-doma_quarkus.doma.dialect[quarkus.doma.dialect]`
+
+[.description]
+--
+The SQL dialect.
+--|`standard`, `sqlite`, `db2`, `mssql`, `mssql2008`, `mysql`, `postgres`, `oracle`, `h2`, `hsql` 
+|
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.sql-file-repository]]`link:#quarkus-doma_quarkus.doma.sql-file-repository[quarkus.doma.sql-file-repository]`
+
+[.description]
+--
+The SQL file repository.
+--|`no-cache`, `greedy-cache` 
+|`greedy-cache`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.naming]]`link:#quarkus-doma_quarkus.doma.naming[quarkus.doma.naming]`
+
+[.description]
+--
+The naming convention controller.
+--|`none`, `lower-case`, `upper-case`, `snake-lower-case`, `snake-upper-case`, `lenient-snake-lower-case`, `lenient-snake-upper-case`, `default` 
+|`default`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.exception-sql-log-type]]`link:#quarkus-doma_quarkus.doma.exception-sql-log-type[quarkus.doma.exception-sql-log-type]`
+
+[.description]
+--
+The SQL log type that determines the SQL log format in exceptions.
+--|`raw`, `formatted`, `none` 
+|`none`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.datasource-name]]`link:#quarkus-doma_quarkus.doma.datasource-name[quarkus.doma.datasource-name]`
+
+[.description]
+--
+The name of the data source.
+--|string 
+|
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.batch-size]]`link:#quarkus-doma_quarkus.doma.batch-size[quarkus.doma.batch-size]`
+
+[.description]
+--
+The batch size.
+--|int 
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.fetch-size]]`link:#quarkus-doma_quarkus.doma.fetch-size[quarkus.doma.fetch-size]`
+
+[.description]
+--
+The fetch size.
+--|int 
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.max-rows]]`link:#quarkus-doma_quarkus.doma.max-rows[quarkus.doma.max-rows]`
+
+[.description]
+--
+The max rows.
+--|int 
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.query-timeout]]`link:#quarkus-doma_quarkus.doma.query-timeout[quarkus.doma.query-timeout]`
+
+[.description]
+--
+The query timeout limit in seconds.
+--|int 
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.log.level]]`link:#quarkus-doma_quarkus.doma.log.level[quarkus.doma.log.level]`
+
+[.description]
+--
+The level of log.
+--|`fatal`, `error`, `warn`, `info`, `debug`, `trace` 
+|`debug`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.log.sql]]`link:#quarkus-doma_quarkus.doma.log.sql[quarkus.doma.log.sql]`
+
+[.description]
+--
+Shows SQL logs.
+--|boolean 
+|`false`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.log.dao]]`link:#quarkus-doma_quarkus.doma.log.dao[quarkus.doma.log.dao]`
+
+[.description]
+--
+Shows DAO logs.
+--|boolean 
+|`false`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.log.closing-failure]]`link:#quarkus-doma_quarkus.doma.log.closing-failure[quarkus.doma.log.closing-failure]`
+
+[.description]
+--
+Shows the logs of the failure to close JDBC resource.
+--|boolean 
+|`false`
+
+|===

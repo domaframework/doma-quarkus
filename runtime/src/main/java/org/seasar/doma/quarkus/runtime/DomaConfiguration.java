@@ -1,10 +1,10 @@
 package org.seasar.doma.quarkus.runtime;
 
-import io.quarkus.runtime.annotations.ConfigDocSection;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.jdbc.GreedyCacheSqlFileRepository;
 import org.seasar.doma.jdbc.Naming;
 import org.seasar.doma.jdbc.NoCacheSqlFileRepository;
@@ -25,42 +25,79 @@ import org.seasar.doma.jdbc.dialect.StandardDialect;
 @ConfigRoot
 public class DomaConfiguration {
 
-  /** */
+  /**
+   * The SQL dialect.
+   *
+   * @see Config#getDialect()
+   * @asciidoclet
+   */
   @ConfigItem public Optional<DialectType> dialect;
 
-  /** */
+  /**
+   * The SQL file repository.
+   *
+   * @see Config#getSqlFileRepository()
+   */
   @ConfigItem(defaultValue = "greedy-cache")
   public SqlFileRepositoryType sqlFileRepository;
 
-  /** */
+  /**
+   * The naming convention controller.
+   *
+   * @see Config#getNaming()
+   */
   @ConfigItem(defaultValue = "default")
   public NamingType naming;
 
-  /** */
+  /**
+   * The SQL log type that determines the SQL log format in exceptions.
+   *
+   * @see Config#getExceptionSqlLogType()
+   */
   @ConfigItem(defaultValue = "none")
   public SqlLogType exceptionSqlLogType;
 
-  /** */
+  /**
+   * The name of the data source.
+   *
+   * @see Config#getDataSourceName()
+   */
   @ConfigItem public Optional<String> datasourceName;
 
-  /** */
+  /**
+   * The batch size.
+   *
+   * @see Config#getBatchSize()
+   */
   @ConfigItem(defaultValue = "0")
   public int batchSize;
 
-  /** */
+  /**
+   * The fetch size.
+   *
+   * @see Config#getFetchSize()
+   */
   @ConfigItem(defaultValue = "0")
   public int fetchSize;
 
-  /** */
+  /**
+   * The max rows.
+   *
+   * @see Config#getMaxRows()
+   */
   @ConfigItem(defaultValue = "0")
   public int maxRows;
 
-  /** */
+  /**
+   * The query timeout limit in seconds.
+   *
+   * @see Config#getQueryTimeout()
+   */
   @ConfigItem(defaultValue = "0")
   public int queryTimeout;
 
-  /** */
-  @ConfigItem @ConfigDocSection public LogConfiguration log;
+  /** The log configuration. */
+  @ConfigItem public LogConfiguration log;
 
   @Override
   public String toString() {

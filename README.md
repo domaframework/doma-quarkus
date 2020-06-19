@@ -43,6 +43,8 @@ The above properties are all optional.
 Our extension infers the `quarkus.doma.datasource-name` and `quarkus.doma.dialect` properties 
 from the `quarkus.datasource` properties.
 
+See [quarkus-doma.adoc](./quarkus-doma.adoc) for more details.
+
 ### Support for native images
 
 Our extension recognizes reflective classes and resources,
@@ -54,7 +56,7 @@ and includes them into your native image without additional configurations.
 
 ```groovy
 dependencies {
-    implementation "org.seasar.doma:doma-quarkus:1.0.0"
+    implementation "org.seasar.doma:doma-quarkus:0.2.0-SNAPSHOT"
     implementation "org.seasar.doma:doma-core:2.37.0"
     annotationProcessor "org.seasar.doma:doma-processor:2.37.0"
 }
