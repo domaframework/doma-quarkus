@@ -2,14 +2,9 @@ package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
-import org.jboss.logging.Logger;
 
 @ConfigGroup
 public class LogConfiguration {
-
-  /** The level of log. */
-  @ConfigItem(defaultValue = "DEBUG")
-  public Logger.Level level = Logger.Level.DEBUG;
 
   /** Shows SQL logs. */
   @ConfigItem public boolean sql;

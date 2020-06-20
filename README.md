@@ -26,22 +26,19 @@ You can write the following configurations in your application.properties file:
 quarkus.doma.datasource-name=default
 quarkus.doma.dialect=h2
 quarkus.doma.sql-file-repository=greedy-cache
-quarkus.doma.naming=default
+quarkus.doma.naming=none
 quarkus.doma.exception-sql-log-type=none
 quarkus.doma.batch-size=0
 quarkus.doma.fetch-size=0
 quarkus.doma.max-rows=0
 quarkus.doma.query-timeout=0
 
-quarkus.doma.log.sql=true
-quarkus.doma.log.dao=true
-quarkus.doma.log.closing-failure=true
+quarkus.doma.log.sql=false
+quarkus.doma.log.dao=false
+quarkus.doma.log.closing-failure=false
 ```
 
 The above properties are all optional.
-
-Our extension infers the `quarkus.doma.datasource-name` and `quarkus.doma.dialect` properties 
-from the `quarkus.datasource` properties.
 
 See [quarkus-doma.adoc](./quarkus-doma.adoc) for more details.
 

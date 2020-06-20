@@ -17,7 +17,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
   }
 
   public JBossJdbcLogger(LogConfiguration logConfiguration) {
-    super(logConfiguration.level);
+    super(Logger.Level.DEBUG);
     this.logConfiguration = logConfiguration;
   }
 
