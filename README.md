@@ -53,7 +53,7 @@ and includes them into your native image without additional configurations.
 
 ```groovy
 dependencies {
-    implementation "org.seasar.doma:doma-quarkus:0.2.0-SNAPSHOT"
+    implementation "org.seasar.doma:doma-quarkus:0.2.0"
     implementation "org.seasar.doma:doma-core:2.37.0"
     annotationProcessor "org.seasar.doma:doma-processor:2.37.0"
 }
