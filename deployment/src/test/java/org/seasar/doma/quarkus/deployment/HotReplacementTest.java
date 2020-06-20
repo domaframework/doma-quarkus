@@ -7,6 +7,8 @@ import io.restassured.RestAssured;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -23,11 +25,22 @@ public class HotReplacementTest {
                               "quarkus.datasource.db-kind=h2\n"
                                   + "quarkus.datasource.username=USERNAME-NAMED\n"
                                   + "quarkus.datasource.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
-                                  + "quarkus.datasource.jdbc.driver=org.h2.Driver\n"),
+                                  + "quarkus.datasource.jdbc.driver=org.h2.Driver\n"
+                                  + "quarkus.http.port=8083"),
                           "application.properties")
                       .addAsResource(HotReplacementResource.SQL_FILE)
                       .addAsResource(HotReplacementResource.SCRIPT_FILE)
                       .addClass(HotReplacementResource.class));
+
+  @BeforeAll
+  public static void setUpPort() {
+    RestAssured.port = 8083;
+  }
+
+  @AfterAll
+  public static void tearDownPort() {
+    RestAssured.reset();
+  }
 
   @Test
   public void sql() {
