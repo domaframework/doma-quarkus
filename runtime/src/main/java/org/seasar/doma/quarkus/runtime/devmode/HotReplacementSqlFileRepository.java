@@ -7,16 +7,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.seasar.doma.jdbc.AbstractSqlFileRepository;
 import org.seasar.doma.jdbc.SqlFile;
 import org.seasar.doma.jdbc.dialect.Dialect;
 
 public class HotReplacementSqlFileRepository extends AbstractSqlFileRepository {
 
-  private final List<Path> hotReplacementResources;
+  private final List<Path> resourcesDirs;
 
-  public HotReplacementSqlFileRepository(List<Path> hotReplacementResources) {
-    this.hotReplacementResources = Collections.unmodifiableList(hotReplacementResources);
+  public HotReplacementSqlFileRepository(List<Path> resourcesDirs) {
+    Objects.requireNonNull(resourcesDirs);
+    this.resourcesDirs = Collections.unmodifiableList(resourcesDirs);
   }
 
   @Override
@@ -26,11 +28,11 @@ public class HotReplacementSqlFileRepository extends AbstractSqlFileRepository {
 
   @Override
   protected String getSql(String path) {
-    for (Path resource : hotReplacementResources) {
-      Path resolved = resource.resolve(path);
-      if (Files.exists(resolved)) {
+    for (Path dir : resourcesDirs) {
+      Path file = dir.resolve(path);
+      if (Files.exists(file)) {
         try {
-          return String.join("\n", Files.readAllLines(resolved));
+          return String.join("\n", Files.readAllLines(file));
         } catch (IOException e) {
           throw new UncheckedIOException(e);
         }

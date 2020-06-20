@@ -4,6 +4,7 @@ import io.quarkus.arc.runtime.BeanContainerListener;
 import io.quarkus.runtime.annotations.Recorder;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import org.seasar.doma.jdbc.ConfigSupport;
 import org.seasar.doma.quarkus.runtime.devmode.HotReplacementScriptFileLoader;
 import org.seasar.doma.quarkus.runtime.devmode.HotReplacementSqlFileRepository;
@@ -11,10 +12,10 @@ import org.seasar.doma.quarkus.runtime.devmode.HotReplacementSqlFileRepository;
 @Recorder
 public class DomaRecorder {
 
-  private static volatile List<Path> hotReplacementResources;
+  private static volatile List<Path> hotReplacementResourcesDirs;
 
-  public static void setHotReplacementResources(List<Path> resources) {
-    hotReplacementResources = resources;
+  public static void setHotReplacementResourcesDirs(List<Path> resourcesDirs) {
+    hotReplacementResourcesDirs = Objects.requireNonNull(resourcesDirs);
   }
 
   public BeanContainerListener configure(DomaConfiguration configuration) {
@@ -37,8 +38,9 @@ public class DomaRecorder {
   public BeanContainerListener configureHotReplacement() {
     return beanContainer -> {
       DomaProducer producer = beanContainer.instance(DomaProducer.class);
-      producer.setSqlFileRepository(new HotReplacementSqlFileRepository(hotReplacementResources));
-      producer.setScriptFileLoader(new HotReplacementScriptFileLoader(hotReplacementResources));
+      producer.setSqlFileRepository(
+          new HotReplacementSqlFileRepository(hotReplacementResourcesDirs));
+      producer.setScriptFileLoader(new HotReplacementScriptFileLoader(hotReplacementResourcesDirs));
     };
   }
 }
