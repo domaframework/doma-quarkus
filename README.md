@@ -7,6 +7,7 @@ Quarkus Extension for Doma provides the following features:
 
 - Hot reload
 - Automatic bean register
+- Automatic SQL execution on startup
 - Configuration
 - Support for native images
 
@@ -17,6 +18,10 @@ In development mode, SQL and Script files are hot reloaded.
 ### Automatic bean register
 
 Our extension registers all DAO beans to the Quarkus CDI container automatically.
+
+### Automatic SQL import on startup
+
+Our extension executes ``import.sql`` automatically when Doma starts.
 
 ### Configuration
 
@@ -32,6 +37,7 @@ quarkus.doma.batch-size=0
 quarkus.doma.fetch-size=0
 quarkus.doma.max-rows=0
 quarkus.doma.query-timeout=0
+quarkus-doma_quarkus.doma.sql-load-script=import.sql
 
 quarkus.doma.log.sql=false
 quarkus.doma.log.dao=false

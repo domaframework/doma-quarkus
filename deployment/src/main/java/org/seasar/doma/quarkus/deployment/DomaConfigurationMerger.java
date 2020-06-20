@@ -1,12 +1,18 @@
 package org.seasar.doma.quarkus.deployment;
 
 import io.quarkus.agroal.deployment.JdbcDataSourceBuildItem;
+import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
+import io.quarkus.deployment.builditem.LaunchModeBuildItem;
+import io.quarkus.runtime.LaunchMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jboss.logging.Logger;
 import org.seasar.doma.quarkus.runtime.DomaConfiguration;
+import org.seasar.doma.quarkus.runtime.InitialScript;
 
 public class DomaConfigurationMerger {
 
@@ -14,14 +20,27 @@ public class DomaConfigurationMerger {
 
   private final DomaConfiguration configuration;
   private final List<JdbcDataSourceBuildItem> dataSources;
+  private final ApplicationArchivesBuildItem applicationArchives;
+  private final LaunchModeBuildItem launchMode;
 
   DomaConfigurationMerger(
-      DomaConfiguration configuration, List<JdbcDataSourceBuildItem> dataSources) {
+      DomaConfiguration configuration,
+      List<JdbcDataSourceBuildItem> dataSources,
+      ApplicationArchivesBuildItem applicationArchives,
+      LaunchModeBuildItem launchMode) {
     this.configuration = Objects.requireNonNull(configuration);
     this.dataSources = Objects.requireNonNull(dataSources);
+    this.applicationArchives = Objects.requireNonNull(applicationArchives);
+    this.launchMode = Objects.requireNonNull(launchMode);
   }
 
   void merge() {
+    mergeDataSourceDependentItems();
+    mergeSqlLoadScript();
+    LOGGER.debugf("configuration: %s", configuration);
+  }
+
+  private void mergeDataSourceDependentItems() {
     Optional<String> dataSourceName = configuration.datasourceName;
     Optional<DomaConfiguration.DialectType> dialect = configuration.dialect;
 
@@ -38,11 +57,10 @@ public class DomaConfigurationMerger {
           configuration.dialect = Optional.of(inferDialectType(dbKind));
         } else {
           throw new IllegalStateException(
-              "The quarkus.doma.datasource-name \""
-                  + dataSourceName.get()
-                  + "\" is found, but quarkus.datasource named \""
-                  + dataSourceName.get()
-                  + "\" is not found.");
+              String.format(
+                  "'quarkus.doma.datasource-name=%s' is found, "
+                      + "but 'quarkus.datasource.\"datasource-name\"' is not found.",
+                  dataSourceName.get()));
         }
       }
     } else {
@@ -65,8 +83,6 @@ public class DomaConfigurationMerger {
                 + "Specify the configuration in your application.properties.");
       }
     }
-
-    LOGGER.debugf("configuration: %s", configuration);
   }
 
   private DomaConfiguration.DialectType inferDialectType(String dbKind) {
@@ -87,6 +103,36 @@ public class DomaConfigurationMerger {
             "Can't infer the dialect from the dbKind \""
                 + dbKind
                 + "\". The dbKind is illegal or not supported.");
+    }
+  }
+
+  private void mergeSqlLoadScript() {
+    Optional<String> sqlLoadScript = configuration.sqlLoadScript;
+    if (sqlLoadScript.isPresent()) {
+      if (sqlLoadScript.get().equals(InitialScript.NO_FILE)) {
+        configuration.sqlLoadScript = Optional.empty();
+      } else {
+        Path path = applicationArchives.getRootArchive().getChildPath(sqlLoadScript.get());
+        if (path == null || Files.isDirectory(path)) {
+          throw new IllegalStateException(
+              String.format(
+                  "Can't find the file referenced in 'quarkus.doma.sql-load-script=%s'. "
+                      + "Remove property or add file to your path.",
+                  sqlLoadScript.get()));
+        }
+      }
+    } else {
+      LaunchMode mode = launchMode.getLaunchMode();
+      if (mode == LaunchMode.DEVELOPMENT || mode == LaunchMode.TEST) {
+        Path path = applicationArchives.getRootArchive().getChildPath(InitialScript.DEFAULT);
+        if (path == null || Files.isDirectory(path)) {
+          configuration.sqlLoadScript = Optional.empty();
+        } else {
+          configuration.sqlLoadScript = Optional.of(InitialScript.DEFAULT);
+        }
+      } else {
+        configuration.sqlLoadScript = Optional.empty();
+      }
     }
   }
 }

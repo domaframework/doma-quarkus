@@ -1,7 +1,9 @@
 package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.arc.DefaultBean;
+import io.quarkus.runtime.Startup;
 import java.util.Objects;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -38,6 +40,7 @@ public class DomaProducer {
   private volatile int fetchSize;
   private volatile int maxRows;
   private volatile int queryTimeout;
+  private volatile Optional<InitialScript> initialScript;
   private volatile LogConfiguration logConfiguration;
 
   public void setSqlFileRepository(SqlFileRepository sqlFileRepository) {
@@ -78,6 +81,10 @@ public class DomaProducer {
 
   public void setQueryTimeout(int queryTimeout) {
     this.queryTimeout = queryTimeout;
+  }
+
+  public void setInitialScript(Optional<InitialScript> initialScript) {
+    this.initialScript = Objects.requireNonNull(initialScript);
   }
 
   public void setLogConfiguration(LogConfiguration logConfiguration) {
@@ -227,5 +234,13 @@ public class DomaProducer {
   @DefaultBean
   NativeSql nativeSql(Config config) {
     return new NativeSql(config);
+  }
+
+  @Startup
+  @ApplicationScoped
+  @DefaultBean
+  InitialScriptLoader initialScriptLoader(Config config) {
+    Objects.requireNonNull(initialScript);
+    return new InitialScriptLoader(config, initialScript);
   }
 }

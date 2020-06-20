@@ -24,7 +24,6 @@ public class DomaConfiguration {
    * The SQL dialect.
    *
    * @see Config#getDialect()
-   * @asciidoclet
    */
   @ConfigItem(defaultValueDocumentation = "depends on 'quarkus.datasource.db-kind'")
   public Optional<DialectType> dialect;
@@ -93,6 +92,19 @@ public class DomaConfiguration {
    */
   @ConfigItem(defaultValue = "0")
   public int queryTimeout;
+
+  /**
+   * Name of the file containing the SQL statements to execute when Doma starts. Its default value
+   * differs depending on the Quarkus launch mode:
+   *
+   * <p>* In dev and test modes, it defaults to `import.sql`. Simply add an `import.sql` file in the
+   * root of your resources directory and it will be picked up without having to set this property.
+   * Pass `no-file` to force Doma to ignore the SQL import file. * In production mode, it defaults
+   * to `no-file`. It means Doma won't try to execute any SQL import file by default. Pass an
+   * explicit value to force Doma to execute the SQL import file.
+   */
+  @ConfigItem(defaultValueDocumentation = "import.sql in DEV, TEST ; no-file otherwise")
+  public Optional<String> sqlLoadScript;
 
   /** The log configuration. */
   @ConfigItem public LogConfiguration log;

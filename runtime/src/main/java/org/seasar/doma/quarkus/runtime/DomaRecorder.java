@@ -31,6 +31,7 @@ public class DomaRecorder {
       producer.setFetchSize(configuration.fetchSize);
       producer.setMaxRows(configuration.maxRows);
       producer.setQueryTimeout(configuration.queryTimeout);
+      producer.setInitialScript(configuration.sqlLoadScript.map(InitialScript::new));
       producer.setLogConfiguration(configuration.log);
     };
   }

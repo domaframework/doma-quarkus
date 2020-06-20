@@ -11,6 +11,9 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.seasar.doma.jdbc.Config;
+import org.seasar.doma.jdbc.criteria.Entityql;
+import org.seasar.doma.jdbc.criteria.NativeSql;
+import org.seasar.doma.quarkus.runtime.InitialScriptLoader;
 
 public class InjectConfigTest {
 
@@ -29,6 +32,9 @@ public class InjectConfigTest {
                           "application.properties"));
 
   @Inject Config config;
+  @Inject Entityql entityql;
+  @Inject NativeSql nativeSql;
+  @Inject InitialScriptLoader scriptLoader;
 
   @Test
   public void test() {
@@ -55,5 +61,8 @@ public class InjectConfigTest {
     assertEquals(0, config.getFetchSize());
     assertEquals(0, config.getMaxRows());
     assertEquals(0, config.getQueryTimeout());
+    assertNotNull(entityql);
+    assertNotNull(nativeSql);
+    assertNotNull(scriptLoader);
   }
 }
