@@ -80,7 +80,7 @@ public class DbConfig implements Config {
     this.mapKeyNaming = Objects.requireNonNull(mapKeyNaming);
     this.commenter = Objects.requireNonNull(commenter);
     this.entityListenerProvider = Objects.requireNonNull(entityListenerProvider);
-    this.transactionManager = transactionManager;
+    this.transactionManager = Objects.requireNonNull(transactionManager);
     this.dataSourceName = Objects.requireNonNull(dataSourceName);
     this.batchSize = batchSize;
     this.fetchSize = fetchSize;

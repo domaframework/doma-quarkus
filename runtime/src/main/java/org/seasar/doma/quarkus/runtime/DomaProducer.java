@@ -3,7 +3,6 @@ package org.seasar.doma.quarkus.runtime;
 import io.quarkus.arc.DefaultBean;
 import java.util.Objects;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import org.seasar.doma.jdbc.ClassHelper;
@@ -171,6 +170,12 @@ public class DomaProducer {
 
   @ApplicationScoped
   @DefaultBean
+  TransactionManager transactionManager() {
+    return new UnsupportedTransactionManager();
+  }
+
+  @ApplicationScoped
+  @DefaultBean
   DbConfig dbConfig(
       DataSource dataSource,
       Dialect dialect,
@@ -187,7 +192,7 @@ public class DomaProducer {
       MapKeyNaming mapKeyNaming,
       Commenter commenter,
       EntityListenerProvider entityListenerProvider,
-      Instance<TransactionManager> transactionManager) {
+      TransactionManager transactionManager) {
     return new DbConfig(
         dataSource,
         dialect,
@@ -204,7 +209,7 @@ public class DomaProducer {
         mapKeyNaming,
         commenter,
         entityListenerProvider,
-        transactionManager.isResolvable() ? transactionManager.get() : null,
+        transactionManager,
         dataSourceName,
         batchSize,
         fetchSize,

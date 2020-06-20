@@ -2,7 +2,6 @@ package org.seasar.doma.quarkus.deployment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.quarkus.test.QuarkusUnitTest;
 import javax.inject.Inject;
@@ -50,7 +49,7 @@ public class InjectConfigTest {
     assertNotNull(config.getMapKeyNaming());
     assertNotNull(config.getCommenter());
     assertNotNull(config.getEntityListenerProvider());
-    assertNull(config.getTransactionManager());
+    assertNotNull(config.getTransactionManager());
     assertEquals("<default>", config.getDataSourceName());
     assertEquals(0, config.getBatchSize());
     assertEquals(0, config.getFetchSize());
