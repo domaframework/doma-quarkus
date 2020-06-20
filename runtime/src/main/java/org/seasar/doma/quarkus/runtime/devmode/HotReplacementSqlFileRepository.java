@@ -30,7 +30,7 @@ public class HotReplacementSqlFileRepository extends AbstractSqlFileRepository {
       Path resolved = resource.resolve(path);
       if (Files.exists(resolved)) {
         try {
-          return String.join("", Files.readAllLines(resolved));
+          return String.join("\n", Files.readAllLines(resolved));
         } catch (IOException e) {
           throw new UncheckedIOException(e);
         }

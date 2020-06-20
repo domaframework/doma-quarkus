@@ -9,8 +9,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.seasar.doma.jdbc.Config;
+import org.seasar.doma.jdbc.ScriptFileLoader;
 import org.seasar.doma.jdbc.SqlFile;
+import org.seasar.doma.jdbc.SqlFileRepository;
+import org.seasar.doma.jdbc.dialect.Dialect;
 
 @Path("/hot")
 public class HotReplacementResource {
@@ -21,15 +23,16 @@ public class HotReplacementResource {
   public static final String SCRIPT_FILE =
       "META-INF/org/seasar/doma/quarkus/deployment/MyEntityDao/create.script";
 
-  @Inject Config config;
+  @Inject Dialect dialect;
+  @Inject SqlFileRepository sqlFileRepository;
+  @Inject ScriptFileLoader scriptFileLoader;
 
   @GET
   @Path("/sql")
   @Produces(MediaType.TEXT_PLAIN)
   public String sql() throws Exception {
     Method method = getClass().getMethod("sql");
-    SqlFile sqlFile =
-        config.getSqlFileRepository().getSqlFile(method, SQL_FILE, config.getDialect());
+    SqlFile sqlFile = sqlFileRepository.getSqlFile(method, SQL_FILE, dialect);
     return sqlFile.getSql();
   }
 
@@ -37,8 +40,7 @@ public class HotReplacementResource {
   @Path("/script")
   @Produces(MediaType.TEXT_PLAIN)
   public String script() throws Exception {
-    URL url = config.getScriptFileLoader().loadAsURL(SCRIPT_FILE);
-    System.out.println("url" + url);
-    return String.join("", Files.readAllLines(Paths.get(url.toURI())));
+    URL url = scriptFileLoader.loadAsURL(SCRIPT_FILE);
+    return String.join("\n", Files.readAllLines(Paths.get(url.toURI())));
   }
 }

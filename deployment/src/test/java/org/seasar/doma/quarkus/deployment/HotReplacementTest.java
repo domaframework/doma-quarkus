@@ -31,17 +31,17 @@ public class HotReplacementTest {
 
   @Test
   public void sql() {
-    RestAssured.when().get("/hot/sql").then().body(is("select * from employee"));
+    RestAssured.when().get("/hot/sql").then().body(is("select\n*\nfrom\nemployee"));
     runner.modifyResourceFile(
         HotReplacementResource.SQL_FILE, s -> s.replaceAll("employee", "department"));
-    RestAssured.when().get("/hot/sql").then().body(is("select * from department"));
+    RestAssured.when().get("/hot/sql").then().body(is("select\n*\nfrom\ndepartment"));
   }
 
   @Test
   public void script() {
-    RestAssured.when().get("/hot/script").then().body(is("create table employee (id int)"));
+    RestAssured.when().get("/hot/script").then().body(is("create table employee (\n  id int\n)"));
     runner.modifyResourceFile(
         HotReplacementResource.SCRIPT_FILE, s -> s.replaceAll("employee", "department"));
-    RestAssured.when().get("/hot/script").then().body(is("create table department (id int)"));
+    RestAssured.when().get("/hot/script").then().body(is("create table department (\n  id int\n)"));
   }
 }
