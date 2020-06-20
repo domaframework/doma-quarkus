@@ -53,11 +53,39 @@ and includes them into your native image without additional configurations.
 
 ```groovy
 dependencies {
-    implementation "org.seasar.doma:doma-quarkus:0.2.0"
-    implementation "org.seasar.doma:doma-core:2.37.0"
     annotationProcessor "org.seasar.doma:doma-processor:2.37.0"
+    implementation "org.seasar.doma:doma-core:2.37.0"
+    implementation "org.seasar.doma:doma-quarkus-deployment:0.2.0"
 }
+```
+
+### Maven
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.seasar.doma</groupId>
+        <artifactId>doma-processor</artifactId>
+        <version>2.37.0</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.seasar.doma</groupId>
+        <artifactId>doma-core</artifactId>
+        <version>2.37.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.seasar.doma</groupId>
+        <artifactId>doma-quarkus-deployment</artifactId>
+        <version>0.2.0</version>
+    </dependency>
+    ...
+</dependencies>
 ```
 
 ## Sample project
 - [quarkus-sample](https://github.com/domaframework/quarkus-sample)
+
+## Related information
+- [Building Applications with Gradle](https://quarkus.io/guides/gradle-tooling)
+- [Building Applications with Maven](https://quarkus.io/guides/maven-tooling)
