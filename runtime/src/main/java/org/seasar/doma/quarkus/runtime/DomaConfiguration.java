@@ -31,7 +31,8 @@ public class DomaConfiguration {
    * @see Config#getDialect()
    * @asciidoclet
    */
-  @ConfigItem public Optional<DialectType> dialect;
+  @ConfigItem(defaultValueDocumentation = "depends on 'quarkus.datasource.db-kind'")
+  public Optional<DialectType> dialect;
 
   /**
    * The SQL file repository.
@@ -62,7 +63,9 @@ public class DomaConfiguration {
    *
    * @see Config#getDataSourceName()
    */
-  @ConfigItem public Optional<String> datasourceName;
+  @ConfigItem(
+      defaultValueDocumentation = "depends on 'quarkus.datasource.\"datasource-name\".db-kind'")
+  public Optional<String> datasourceName;
 
   /**
    * The batch size.
