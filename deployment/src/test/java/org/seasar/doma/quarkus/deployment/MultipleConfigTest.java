@@ -17,6 +17,7 @@ import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.quarkus.runtime.DbConfig;
 
 public class MultipleConfigTest {
+
   @RegisterExtension
   static QuarkusUnitTest runner =
       new QuarkusUnitTest()

@@ -15,6 +15,7 @@ import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.jdbc.dialect.Dialect;
 
 public class OverrideConfigTest {
+
   @RegisterExtension
   static QuarkusUnitTest runner =
       new QuarkusUnitTest()
