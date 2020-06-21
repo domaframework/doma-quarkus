@@ -37,7 +37,7 @@ quarkus.doma.batch-size=0
 quarkus.doma.fetch-size=0
 quarkus.doma.max-rows=0
 quarkus.doma.query-timeout=0
-quarkus-doma_quarkus.doma.sql-load-script=import.sql
+quarkus.doma.sql-load-script=import.sql
 
 quarkus.doma.log.sql=false
 quarkus.doma.log.dao=false
