@@ -18,11 +18,18 @@ public class DomaRecorder {
     hotReplacementResourcesDirs = Objects.requireNonNull(resourcesDirs);
   }
 
-  public BeanContainerListener configure(DomaConfiguration configuration) {
+  public BeanContainerListener configure(DomaConfiguration configuration, boolean isDevMode) {
     return beanContainer -> {
       DomaProducer producer = beanContainer.instance(DomaProducer.class);
-      producer.setSqlFileRepository(configuration.sqlFileRepository.create());
-      producer.setScriptFileLoader(ConfigSupport.defaultScriptFileLoader);
+      if (isDevMode) {
+        producer.setSqlFileRepository(
+            new HotReplacementSqlFileRepository(hotReplacementResourcesDirs));
+        producer.setScriptFileLoader(
+            new HotReplacementScriptFileLoader(hotReplacementResourcesDirs));
+      } else {
+        producer.setSqlFileRepository(configuration.sqlFileRepository.create());
+        producer.setScriptFileLoader(ConfigSupport.defaultScriptFileLoader);
+      }
       producer.setDialect(configuration.dialect.get().create());
       producer.setNaming(configuration.naming.naming());
       producer.setExceptionSqlLogType(configuration.exceptionSqlLogType);
@@ -33,15 +40,6 @@ public class DomaRecorder {
       producer.setQueryTimeout(configuration.queryTimeout);
       producer.setInitialScript(configuration.sqlLoadScript.map(InitialScript::new));
       producer.setLogConfiguration(configuration.log);
-    };
-  }
-
-  public BeanContainerListener configureHotReplacement() {
-    return beanContainer -> {
-      DomaProducer producer = beanContainer.instance(DomaProducer.class);
-      producer.setSqlFileRepository(
-          new HotReplacementSqlFileRepository(hotReplacementResourcesDirs));
-      producer.setScriptFileLoader(new HotReplacementScriptFileLoader(hotReplacementResourcesDirs));
     };
   }
 }

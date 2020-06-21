@@ -7,7 +7,6 @@ import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
 import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
-import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
@@ -18,7 +17,6 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.runtime.LaunchMode;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.jboss.jandex.DotName;
@@ -62,13 +60,11 @@ class DomaProcessor {
   }
 
   @BuildStep
-  List<HotDeploymentWatchedFileBuildItem> hotDeploymentWatchedFile(
+  Optional<HotDeploymentWatchedFileBuildItem> hotDeploymentWatchedFile(
       MergedConfigurationBuildItem mergedConfiguration) {
     DomaConfiguration configuration = mergedConfiguration.getConfiguration();
     Optional<String> sqlLoadScript = configuration.sqlLoadScript;
-    return sqlLoadScript
-        .map(it -> Collections.singletonList(new HotDeploymentWatchedFileBuildItem(it)))
-        .orElse(Collections.emptyList());
+    return sqlLoadScript.map(HotDeploymentWatchedFileBuildItem::new);
   }
 
   @BuildStep
@@ -86,27 +82,22 @@ class DomaProcessor {
   @BuildStep
   ReflectiveClassBuildItem classes(BeanArchiveIndexBuildItem beanArchiveIndex) {
     List<String> classes = new ArrayList<>();
+    classes.add(InitialScriptLoader.class.getName());
     IndexView indexView = beanArchiveIndex.getIndex();
     DomaClassScanner scanner = new DomaClassScanner(indexView);
     List<String> scannedClasses = scanner.scan();
-    classes.add(InitialScriptLoader.class.getName());
     classes.addAll(scannedClasses);
     return new ReflectiveClassBuildItem(true, true, classes.toArray(new String[0]));
   }
 
   @BuildStep
   @Record(STATIC_INIT)
-  void configure(
+  BeanContainerListenerBuildItem beanContainerListener(
       DomaRecorder recorder,
       MergedConfigurationBuildItem mergedConfiguration,
-      LaunchModeBuildItem launchMode,
-      BuildProducer<BeanContainerListenerBuildItem> beanContainerListeners) {
+      LaunchModeBuildItem launchMode) {
     DomaConfiguration configuration = mergedConfiguration.getConfiguration();
-    beanContainerListeners.produce(
-        new BeanContainerListenerBuildItem(recorder.configure(configuration)));
-    if (launchMode.getLaunchMode() == LaunchMode.DEVELOPMENT) {
-      beanContainerListeners.produce(
-          new BeanContainerListenerBuildItem(recorder.configureHotReplacement()));
-    }
+    boolean isDevMode = launchMode.getLaunchMode() == LaunchMode.DEVELOPMENT;
+    return new BeanContainerListenerBuildItem(recorder.configure(configuration, isDevMode));
   }
 }
