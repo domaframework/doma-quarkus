@@ -3,3 +3,4 @@ target
 deployment/target
 runtime/target
 *.iml
+.sdkmanrc
