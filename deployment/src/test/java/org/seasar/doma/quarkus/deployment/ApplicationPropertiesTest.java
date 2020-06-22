@@ -26,10 +26,10 @@ public class ApplicationPropertiesTest {
                       .addClasses()
                       .add(
                           new StringAsset(
-                              "quarkus.datasource.db-kind=h2\n"
-                                  + "quarkus.datasource.username=USERNAME-NAMED\n"
-                                  + "quarkus.datasource.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
-                                  + "quarkus.datasource.jdbc.driver=org.h2.Driver\n"
+                              "quarkus.datasource.sales.db-kind=h2\n"
+                                  + "quarkus.datasource.sales.username=USERNAME-NAMED\n"
+                                  + "quarkus.datasource.sales.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
+                                  + "quarkus.datasource.sales.jdbc.driver=org.h2.Driver\n"
                                   + "quarkus.doma.dialect=postgres\n"
                                   + "quarkus.doma.sql-file-repository=no-cache\n"
                                   + "quarkus.doma.naming=upper-case\n"

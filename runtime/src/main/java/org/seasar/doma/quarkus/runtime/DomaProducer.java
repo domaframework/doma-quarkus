@@ -1,10 +1,14 @@
 package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.arc.DefaultBean;
+import io.quarkus.datasource.common.runtime.DataSourceUtil;
 import io.quarkus.runtime.Startup;
 import java.util.Objects;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Instance;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import org.seasar.doma.jdbc.ClassHelper;
@@ -184,7 +188,7 @@ public class DomaProducer {
   @ApplicationScoped
   @DefaultBean
   DbConfig dbConfig(
-      DataSource dataSource,
+      @Any Instance<DataSource> dataSourceInstance,
       Dialect dialect,
       SqlFileRepository sqlFileRepository,
       ScriptFileLoader scriptFileLoader,
@@ -200,6 +204,8 @@ public class DomaProducer {
       Commenter commenter,
       EntityListenerProvider entityListenerProvider,
       TransactionManager transactionManager) {
+    Objects.requireNonNull(dataSourceName);
+    DataSource dataSource = selectDataSource(dataSourceInstance, dataSourceName);
     return new DbConfig(
         dataSource,
         dialect,
@@ -222,6 +228,15 @@ public class DomaProducer {
         fetchSize,
         maxRows,
         queryTimeout);
+  }
+
+  private DataSource selectDataSource(Instance<DataSource> instance, String name) {
+    if (DataSourceUtil.isDefault(name)) {
+      return instance.select(Default.Literal.INSTANCE).get();
+    }
+    io.quarkus.agroal.DataSource qualifier =
+        new io.quarkus.agroal.DataSource.DataSourceLiteral(name);
+    return instance.select(qualifier).get();
   }
 
   @ApplicationScoped

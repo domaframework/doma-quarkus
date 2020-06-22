@@ -1,12 +1,12 @@
 package org.seasar.doma.quarkus.deployment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.agroal.api.AgroalDataSource;
+import io.quarkus.agroal.DataSource;
 import io.quarkus.test.QuarkusUnitTest;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -14,9 +14,8 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.seasar.doma.jdbc.Config;
-import org.seasar.doma.quarkus.runtime.DbConfig;
 
-public class MultipleConfigTest {
+public class DataSourceNameTest {
 
   @RegisterExtension
   static QuarkusUnitTest runner =
@@ -33,33 +32,22 @@ public class MultipleConfigTest {
                                   + "quarkus.datasource.inventory.db-kind=h2\n"
                                   + "quarkus.datasource.inventory.username=USERNAME-NAMED\n"
                                   + "quarkus.datasource.inventory.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
-                                  + "quarkus.datasource.inventory.jdbc.driver=org.h2.Driver\n"),
-                          "application.properties")
-                      .addClasses(MyProducer.class));
+                                  + "quarkus.datasource.inventory.jdbc.driver=org.h2.Driver\n"
+                                  + "quarkus.doma.datasource-name=inventory\n"),
+                          "application.properties"));
 
-  @Inject Config defaultConfig;
+  @Inject Config config;
+
+  @Inject AgroalDataSource defaultDataSource;
 
   @Inject
-  @org.seasar.doma.quarkus.Config("inventory")
-  Config inventoryConfig;
-
-  static class MyProducer {
-
-    @ApplicationScoped
-    @org.seasar.doma.quarkus.Config("inventory")
-    Config inventoryConfig(
-        @io.quarkus.agroal.DataSource("inventory") AgroalDataSource dataSource,
-        @Default DbConfig config) {
-      return config.builder().setDataSource(dataSource).setDataSourceName("inventory").build();
-    }
-  }
+  @DataSource("inventory")
+  AgroalDataSource inventoryDataSource;
 
   @Test
   void test() {
-    assertNotNull(defaultConfig);
-    assertNotNull(defaultConfig.getDataSource());
-    assertNotNull(inventoryConfig);
-    assertNotNull(inventoryConfig.getDataSource());
-    assertNotEquals(defaultConfig, inventoryConfig);
+    assertNotNull(config.getDataSource());
+    assertNotEquals(config.getDataSource(), defaultDataSource);
+    assertEquals(config.getDataSource(), inventoryDataSource);
   }
 }
