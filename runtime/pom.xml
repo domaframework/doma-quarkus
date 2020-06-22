@@ -19,21 +19,13 @@
             <artifactId>quarkus-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.seasar.doma</groupId>
             <artifactId>doma-core</artifactId>
             <version>${doma.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus.arc</groupId>
-            <artifactId>arc</artifactId>
-            <version>1.5.0.Final</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-            <version>1.5.0.Final</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
