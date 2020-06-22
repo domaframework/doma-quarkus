@@ -1,12 +1,15 @@
 package org.seasar.doma.quarkus.deployment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.test.QuarkusUnitTest;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -16,7 +19,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.quarkus.runtime.DbConfig;
 
-public class MultipleConfigTest {
+public class MultipleConfigsTest {
 
   @RegisterExtension
   static QuarkusUnitTest runner =
@@ -43,6 +46,8 @@ public class MultipleConfigTest {
   @org.seasar.doma.quarkus.Config("inventory")
   Config inventoryConfig;
 
+  @Inject @Any Instance<Config> configInstance;
+
   static class MyProducer {
 
     @ApplicationScoped
@@ -61,5 +66,10 @@ public class MultipleConfigTest {
     assertNotNull(inventoryConfig);
     assertNotNull(inventoryConfig.getDataSource());
     assertNotEquals(defaultConfig, inventoryConfig);
+    Config selectedDefaultConfig = configInstance.select(Default.Literal.INSTANCE).get();
+    assertEquals(defaultConfig, selectedDefaultConfig);
+    Config selectedInventoryConfig =
+        configInstance.select(new org.seasar.doma.quarkus.Config.Literal("inventory")).get();
+    assertEquals(inventoryConfig, selectedInventoryConfig);
   }
 }
