@@ -15,14 +15,12 @@ import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
-import io.quarkus.runtime.LaunchMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.seasar.doma.DaoImplementation;
-import org.seasar.doma.quarkus.runtime.DomaConfiguration;
 import org.seasar.doma.quarkus.runtime.DomaProducer;
 import org.seasar.doma.quarkus.runtime.DomaRecorder;
 import org.seasar.doma.quarkus.runtime.InitialScriptLoader;
@@ -48,31 +46,33 @@ class DomaProcessor {
   }
 
   @BuildStep
-  MergedConfigurationBuildItem mergedConfiguration(
-      DomaConfiguration configuration,
+  DomaSettingsBuildItem domaSettings(
+      DomaBuildTimeConfig buildTimeConfig,
       List<JdbcDataSourceBuildItem> dataSources,
       ApplicationArchivesBuildItem applicationArchives,
       LaunchModeBuildItem launchMode) {
-    DomaConfigurationMerger merger =
-        new DomaConfigurationMerger(configuration, dataSources, applicationArchives, launchMode);
-    merger.merge();
-    return new MergedConfigurationBuildItem(configuration);
+    DomaSettingsFactory factory =
+        new DomaSettingsFactory(buildTimeConfig, dataSources, applicationArchives, launchMode);
+    return new DomaSettingsBuildItem(factory.create());
   }
 
   @BuildStep
   Optional<HotDeploymentWatchedFileBuildItem> hotDeploymentWatchedFile(
-      MergedConfigurationBuildItem mergedConfiguration) {
-    DomaConfiguration configuration = mergedConfiguration.getConfiguration();
-    Optional<String> sqlLoadScript = configuration.sqlLoadScript;
-    return sqlLoadScript.map(HotDeploymentWatchedFileBuildItem::new);
+      DomaSettingsBuildItem settings) {
+    String sqlLoadScript = settings.getSettings().sqlLoadScript;
+    if (sqlLoadScript == null) {
+      return Optional.empty();
+    }
+    return Optional.of(new HotDeploymentWatchedFileBuildItem(sqlLoadScript));
   }
 
   @BuildStep
-  NativeImageResourceBuildItem resources(MergedConfigurationBuildItem mergedConfiguration) {
+  NativeImageResourceBuildItem nativeImageResources(DomaSettingsBuildItem settings) {
     List<String> resources = new ArrayList<>();
-    DomaConfiguration configuration = mergedConfiguration.getConfiguration();
-    Optional<String> sqlLoadScript = configuration.sqlLoadScript;
-    sqlLoadScript.ifPresent(resources::add);
+    String sqlLoadScript = settings.getSettings().sqlLoadScript;
+    if (sqlLoadScript != null) {
+      resources.add(sqlLoadScript);
+    }
     DomaResourceScanner scanner = new DomaResourceScanner();
     List<String> scannedResources = scanner.scan();
     resources.addAll(scannedResources);
@@ -80,7 +80,7 @@ class DomaProcessor {
   }
 
   @BuildStep
-  ReflectiveClassBuildItem classes(BeanArchiveIndexBuildItem beanArchiveIndex) {
+  ReflectiveClassBuildItem reflectiveClasses(BeanArchiveIndexBuildItem beanArchiveIndex) {
     List<String> classes = new ArrayList<>();
     classes.add(InitialScriptLoader.class.getName());
     IndexView indexView = beanArchiveIndex.getIndex();
@@ -93,11 +93,8 @@ class DomaProcessor {
   @BuildStep
   @Record(STATIC_INIT)
   BeanContainerListenerBuildItem beanContainerListener(
-      DomaRecorder recorder,
-      MergedConfigurationBuildItem mergedConfiguration,
-      LaunchModeBuildItem launchMode) {
-    DomaConfiguration configuration = mergedConfiguration.getConfiguration();
-    boolean isDevMode = launchMode.getLaunchMode() == LaunchMode.DEVELOPMENT;
-    return new BeanContainerListenerBuildItem(recorder.configure(configuration, isDevMode));
+      DomaRecorder recorder, DomaSettingsBuildItem settings, LaunchModeBuildItem launchMode) {
+    return new BeanContainerListenerBuildItem(
+        recorder.configure(settings.getSettings(), launchMode.getLaunchMode()));
   }
 }

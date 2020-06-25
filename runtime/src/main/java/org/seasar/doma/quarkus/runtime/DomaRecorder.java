@@ -1,6 +1,7 @@
 package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.arc.runtime.BeanContainerListener;
+import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.annotations.Recorder;
 import java.nio.file.Path;
 import java.util.List;
@@ -18,28 +19,28 @@ public class DomaRecorder {
     hotReplacementResourcesDirs = Objects.requireNonNull(resourcesDirs);
   }
 
-  public BeanContainerListener configure(DomaConfiguration configuration, boolean isDevMode) {
+  public BeanContainerListener configure(DomaSettings domaSettings, LaunchMode launchMode) {
     return beanContainer -> {
       DomaProducer producer = beanContainer.instance(DomaProducer.class);
-      if (isDevMode) {
+      if (launchMode == LaunchMode.DEVELOPMENT) {
         producer.setSqlFileRepository(
             new HotReplacementSqlFileRepository(hotReplacementResourcesDirs));
         producer.setScriptFileLoader(
             new HotReplacementScriptFileLoader(hotReplacementResourcesDirs));
       } else {
-        producer.setSqlFileRepository(configuration.sqlFileRepository.create());
+        producer.setSqlFileRepository(domaSettings.sqlFileRepository.create());
         producer.setScriptFileLoader(ConfigSupport.defaultScriptFileLoader);
       }
-      producer.setDialect(configuration.dialect.get().create());
-      producer.setNaming(configuration.naming.naming());
-      producer.setExceptionSqlLogType(configuration.exceptionSqlLogType);
-      producer.setDataSourceName(configuration.datasourceName.get());
-      producer.setBatchSize(configuration.batchSize);
-      producer.setFetchSize(configuration.fetchSize);
-      producer.setMaxRows(configuration.maxRows);
-      producer.setQueryTimeout(configuration.queryTimeout);
-      producer.setInitialScript(configuration.sqlLoadScript.map(InitialScript::new));
-      producer.setLogConfiguration(configuration.log);
+      producer.setDialect(domaSettings.dialect.create());
+      producer.setNaming(domaSettings.naming.naming());
+      producer.setExceptionSqlLogType(domaSettings.exceptionSqlLogType);
+      producer.setDataSourceName(domaSettings.dataSourceName);
+      producer.setBatchSize(domaSettings.batchSize);
+      producer.setFetchSize(domaSettings.fetchSize);
+      producer.setMaxRows(domaSettings.maxRows);
+      producer.setQueryTimeout(domaSettings.queryTimeout);
+      producer.setSqlLoadScript(domaSettings.sqlLoadScript);
+      producer.setLogSettings(domaSettings.log);
     };
   }
 }

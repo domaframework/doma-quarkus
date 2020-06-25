@@ -4,7 +4,6 @@ import io.quarkus.arc.DefaultBean;
 import io.quarkus.datasource.common.runtime.DataSourceUtil;
 import io.quarkus.runtime.Startup;
 import java.util.Objects;
-import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
@@ -44,8 +43,8 @@ public class DomaProducer {
   private volatile int fetchSize;
   private volatile int maxRows;
   private volatile int queryTimeout;
-  private volatile Optional<InitialScript> initialScript;
-  private volatile LogConfiguration logConfiguration;
+  private volatile String sqlLoadScript;
+  private volatile DomaSettings.LogSettings logSettings;
 
   public void setSqlFileRepository(SqlFileRepository sqlFileRepository) {
     this.sqlFileRepository = Objects.requireNonNull(sqlFileRepository);
@@ -87,12 +86,12 @@ public class DomaProducer {
     this.queryTimeout = queryTimeout;
   }
 
-  public void setInitialScript(Optional<InitialScript> initialScript) {
-    this.initialScript = Objects.requireNonNull(initialScript);
+  public void setSqlLoadScript(String sqlLoadScript) {
+    this.sqlLoadScript = sqlLoadScript;
   }
 
-  public void setLogConfiguration(LogConfiguration logConfiguration) {
-    this.logConfiguration = Objects.requireNonNull(logConfiguration);
+  public void setLogSettings(DomaSettings.LogSettings logSettings) {
+    this.logSettings = Objects.requireNonNull(logSettings);
   }
 
   @ApplicationScoped
@@ -116,7 +115,8 @@ public class DomaProducer {
   @ApplicationScoped
   @DefaultBean
   JdbcLogger jdbcLogger() {
-    return new JBossJdbcLogger(Objects.requireNonNull(logConfiguration));
+    Objects.requireNonNull(logSettings);
+    return new JBossJdbcLogger(logSettings);
   }
 
   @ApplicationScoped
@@ -187,7 +187,7 @@ public class DomaProducer {
 
   @ApplicationScoped
   @DefaultBean
-  DbConfig dbConfig(
+  DomaConfig dbConfig(
       @Any Instance<DataSource> dataSourceInstance,
       Dialect dialect,
       SqlFileRepository sqlFileRepository,
@@ -206,7 +206,7 @@ public class DomaProducer {
       TransactionManager transactionManager) {
     Objects.requireNonNull(dataSourceName);
     DataSource dataSource = selectDataSource(dataSourceInstance, dataSourceName);
-    return new DbConfig(
+    return new DomaConfig(
         dataSource,
         dialect,
         sqlFileRepository,
@@ -255,7 +255,6 @@ public class DomaProducer {
   @ApplicationScoped
   @DefaultBean
   InitialScriptLoader initialScriptLoader(Config config) {
-    Objects.requireNonNull(initialScript);
-    return new InitialScriptLoader(config, initialScript);
+    return new InitialScriptLoader(config, sqlLoadScript);
   }
 }

@@ -9,16 +9,15 @@ import org.seasar.doma.jdbc.SqlExecutionSkipCause;
 
 public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
 
-  private final LogConfiguration logConfiguration;
+  private final DomaSettings.LogSettings logSettings;
 
   JBossJdbcLogger() {
-    super(Logger.Level.DEBUG);
-    this.logConfiguration = new LogConfiguration();
+    this(new DomaSettings.LogSettings());
   }
 
-  public JBossJdbcLogger(LogConfiguration logConfiguration) {
+  public JBossJdbcLogger(DomaSettings.LogSettings logSettings) {
     super(Logger.Level.DEBUG);
-    this.logConfiguration = logConfiguration;
+    this.logSettings = logSettings;
   }
 
   @Override
@@ -39,7 +38,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Sql<?> sql,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.sql) {
+    if (logSettings.sql) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -54,7 +53,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Object[] args,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.dao) {
+    if (logSettings.dao) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -69,7 +68,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Object result,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.dao) {
+    if (logSettings.dao) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -84,7 +83,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       RuntimeException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.dao) {
+    if (logSettings.dao) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
@@ -99,7 +98,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SqlExecutionSkipCause cause,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.dao) {
+    if (logSettings.dao) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -115,7 +114,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SQLException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.closingFailure) {
+    if (logSettings.closingFailure) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
@@ -131,7 +130,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SQLException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.closingFailure) {
+    if (logSettings.closingFailure) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
@@ -148,7 +147,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SQLException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logConfiguration.closingFailure) {
+    if (logSettings.closingFailure) {
       Logger logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {

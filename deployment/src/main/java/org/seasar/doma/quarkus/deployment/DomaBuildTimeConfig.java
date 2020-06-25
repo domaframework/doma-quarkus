@@ -1,24 +1,18 @@
-package org.seasar.doma.quarkus.runtime;
+package org.seasar.doma.quarkus.deployment;
 
+import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import java.util.Optional;
-import java.util.function.Supplier;
 import org.seasar.doma.jdbc.Config;
-import org.seasar.doma.jdbc.GreedyCacheSqlFileRepository;
-import org.seasar.doma.jdbc.Naming;
-import org.seasar.doma.jdbc.NoCacheSqlFileRepository;
-import org.seasar.doma.jdbc.SqlFileRepository;
 import org.seasar.doma.jdbc.SqlLogType;
-import org.seasar.doma.jdbc.dialect.Dialect;
-import org.seasar.doma.jdbc.dialect.H2Dialect;
-import org.seasar.doma.jdbc.dialect.MssqlDialect;
-import org.seasar.doma.jdbc.dialect.MysqlDialect;
-import org.seasar.doma.jdbc.dialect.PostgresDialect;
-import org.seasar.doma.jdbc.dialect.StandardDialect;
+import org.seasar.doma.quarkus.runtime.DomaSettings;
 
 @ConfigRoot
-public class DomaConfiguration {
+public class DomaBuildTimeConfig {
+
+  public static final String SQL_LOAD_SCRIPT_DEFAULT = "import.sql";
+  public static final String SQL_LOAD_SCRIPT_NO_FILE = "no-file";
 
   /**
    * The SQL dialect.
@@ -26,7 +20,7 @@ public class DomaConfiguration {
    * @see Config#getDialect()
    */
   @ConfigItem(defaultValueDocumentation = "depends on 'quarkus.datasource.db-kind'")
-  public Optional<DialectType> dialect;
+  public Optional<DomaSettings.DialectType> dialect;
 
   /**
    * The SQL file repository.
@@ -34,7 +28,7 @@ public class DomaConfiguration {
    * @see Config#getSqlFileRepository()
    */
   @ConfigItem(defaultValue = "greedy-cache")
-  public SqlFileRepositoryType sqlFileRepository;
+  public DomaSettings.SqlFileRepositoryType sqlFileRepository;
 
   /**
    * The naming convention controller.
@@ -42,7 +36,7 @@ public class DomaConfiguration {
    * @see Config#getNaming()
    */
   @ConfigItem(defaultValue = "none")
-  public NamingType naming;
+  public DomaSettings.NamingType naming;
 
   /**
    * The SQL log type that determines the SQL log format in exceptions.
@@ -107,7 +101,32 @@ public class DomaConfiguration {
   public Optional<String> sqlLoadScript;
 
   /** The log configuration. */
-  @ConfigItem public LogConfiguration log;
+  @ConfigItem public LogBuildTimeConfig log;
+
+  @ConfigGroup
+  public static class LogBuildTimeConfig {
+
+    /** Shows SQL logs. */
+    @ConfigItem public boolean sql;
+
+    /** Shows DAO logs. */
+    @ConfigItem public boolean dao;
+
+    /** Shows the logs of the failure to close JDBC resource. */
+    @ConfigItem public boolean closingFailure;
+
+    @Override
+    public String toString() {
+      return "DomaConfigurationLog{"
+          + "sql="
+          + sql
+          + ", dao="
+          + dao
+          + ", closingFailure="
+          + closingFailure
+          + '}';
+    }
+  }
 
   @Override
   public String toString() {
@@ -133,56 +152,5 @@ public class DomaConfiguration {
         + ", log="
         + log
         + '}';
-  }
-
-  public enum DialectType {
-    STANDARD(StandardDialect::new),
-    MSSQL(MssqlDialect::new),
-    MYSQL(MysqlDialect::new),
-    POSTGRES(PostgresDialect::new),
-    H2(H2Dialect::new);
-
-    private final Supplier<Dialect> constructor;
-
-    DialectType(Supplier<Dialect> constructor) {
-      this.constructor = constructor;
-    }
-
-    public Dialect create() {
-      return this.constructor.get();
-    }
-  }
-
-  public enum SqlFileRepositoryType {
-    NO_CACHE(NoCacheSqlFileRepository::new),
-    GREEDY_CACHE(GreedyCacheSqlFileRepository::new);
-
-    private final Supplier<SqlFileRepository> constructor;
-
-    SqlFileRepositoryType(Supplier<SqlFileRepository> constructor) {
-      this.constructor = constructor;
-    }
-
-    public SqlFileRepository create() {
-      return this.constructor.get();
-    }
-  }
-
-  public enum NamingType {
-    NONE(Naming.NONE),
-    LOWER_CASE(Naming.LOWER_CASE),
-    UPPER_CASE(Naming.UPPER_CASE),
-    SNAKE_LOWER_CASE(Naming.SNAKE_LOWER_CASE),
-    SNAKE_UPPER_CASE(Naming.SNAKE_UPPER_CASE);
-
-    private final Naming naming;
-
-    NamingType(Naming naming) {
-      this.naming = naming;
-    }
-
-    public Naming naming() {
-      return this.naming;
-    }
   }
 }

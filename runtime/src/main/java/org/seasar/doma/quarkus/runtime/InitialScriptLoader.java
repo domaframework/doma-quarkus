@@ -8,7 +8,6 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Supplier;
 import org.seasar.doma.internal.Constants;
 import org.seasar.doma.jdbc.Config;
@@ -22,10 +21,10 @@ public class InitialScriptLoader {
   private static final String METHOD_NAME = "load";
   private final Config config;
 
-  public InitialScriptLoader(Config config, Optional<InitialScript> initialScript) {
+  public InitialScriptLoader(Config config, String sqlLoadScript) {
     this.config = Objects.requireNonNull(config);
-    if (initialScript.isPresent()) {
-      load(initialScript.get().getPath());
+    if (sqlLoadScript != null) {
+      load(sqlLoadScript);
     }
   }
 

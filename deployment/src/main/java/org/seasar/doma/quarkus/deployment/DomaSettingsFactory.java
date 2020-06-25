@@ -3,7 +3,6 @@ package org.seasar.doma.quarkus.deployment;
 import io.quarkus.agroal.deployment.JdbcDataSourceBuildItem;
 import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
-import io.quarkus.runtime.LaunchMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -11,42 +10,55 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jboss.logging.Logger;
-import org.seasar.doma.quarkus.runtime.DomaConfiguration;
-import org.seasar.doma.quarkus.runtime.InitialScript;
+import org.seasar.doma.quarkus.runtime.DomaSettings;
 
-public class DomaConfigurationMerger {
+public class DomaSettingsFactory {
 
-  private static final Logger LOGGER = Logger.getLogger(DomaConfigurationMerger.class);
+  private static final Logger LOGGER = Logger.getLogger(DomaSettingsFactory.class);
 
-  private final DomaConfiguration configuration;
+  private final DomaBuildTimeConfig buildTimeConfig;
   private final List<JdbcDataSourceBuildItem> dataSources;
   private final ApplicationArchivesBuildItem applicationArchives;
   private final LaunchModeBuildItem launchMode;
 
-  DomaConfigurationMerger(
-      DomaConfiguration configuration,
+  DomaSettingsFactory(
+      DomaBuildTimeConfig buildTimeConfig,
       List<JdbcDataSourceBuildItem> dataSources,
       ApplicationArchivesBuildItem applicationArchives,
       LaunchModeBuildItem launchMode) {
-    this.configuration = Objects.requireNonNull(configuration);
+    this.buildTimeConfig = Objects.requireNonNull(buildTimeConfig);
     this.dataSources = Objects.requireNonNull(dataSources);
     this.applicationArchives = Objects.requireNonNull(applicationArchives);
     this.launchMode = Objects.requireNonNull(launchMode);
   }
 
-  void merge() {
-    mergeDataSourceDependentItems();
-    mergeSqlLoadScript();
-    LOGGER.debugf("configuration: %s", configuration);
+  DomaSettings create() {
+    DomaSettings settings = new DomaSettings();
+    DataSourceDependentItems items = dataSourceDependentItems();
+    settings.dataSourceName = items.dataSourceName;
+    settings.dialect = items.dialect;
+    settings.sqlFileRepository = buildTimeConfig.sqlFileRepository;
+    settings.naming = buildTimeConfig.naming;
+    settings.exceptionSqlLogType = buildTimeConfig.exceptionSqlLogType;
+    settings.sqlLoadScript = sqlLoadScript();
+    settings.batchSize = buildTimeConfig.batchSize;
+    settings.fetchSize = buildTimeConfig.fetchSize;
+    settings.maxRows = buildTimeConfig.maxRows;
+    settings.queryTimeout = buildTimeConfig.queryTimeout;
+    settings.log = log();
+    LOGGER.debugf("settings: %s", settings);
+    return settings;
   }
 
-  private void mergeDataSourceDependentItems() {
-    Optional<String> dataSourceName = configuration.datasourceName;
-    Optional<DomaConfiguration.DialectType> dialect = configuration.dialect;
+  private DataSourceDependentItems dataSourceDependentItems() {
+    DataSourceDependentItems items = new DataSourceDependentItems();
+    Optional<String> dataSourceName = buildTimeConfig.datasourceName;
+    Optional<DomaSettings.DialectType> dialect = buildTimeConfig.dialect;
 
     if (dataSourceName.isPresent()) {
+      items.dataSourceName = dataSourceName.get();
       if (dialect.isPresent()) {
-        // do nothing
+        items.dialect = dialect.get();
       } else {
         Optional<JdbcDataSourceBuildItem> dataSource =
             dataSources.stream()
@@ -54,7 +66,7 @@ public class DomaConfigurationMerger {
                 .findFirst();
         if (dataSource.isPresent()) {
           String dbKind = dataSource.get().getDbKind();
-          configuration.dialect = Optional.of(inferDialectType(dbKind));
+          items.dialect = inferDialectType(dbKind);
         } else {
           throw new IllegalStateException(
               String.format(
@@ -70,12 +82,12 @@ public class DomaConfigurationMerger {
                   dataSources.stream())
               .findFirst();
       if (dataSource.isPresent()) {
-        configuration.datasourceName = Optional.of(dataSource.get().getName());
+        items.dataSourceName = dataSource.get().getName();
         if (dialect.isPresent()) {
-          // do nothing
+          items.dialect = dialect.get();
         } else {
           String dbKind = dataSource.get().getDbKind();
-          configuration.dialect = Optional.of(inferDialectType(dbKind));
+          items.dialect = inferDialectType(dbKind);
         }
       } else {
         throw new IllegalStateException(
@@ -83,21 +95,22 @@ public class DomaConfigurationMerger {
                 + "Specify the configuration in your application.properties.");
       }
     }
+    return items;
   }
 
-  private DomaConfiguration.DialectType inferDialectType(String dbKind) {
+  private DomaSettings.DialectType inferDialectType(String dbKind) {
     switch (dbKind) {
       case "h2":
-        return DomaConfiguration.DialectType.H2;
+        return DomaSettings.DialectType.H2;
       case "mssql":
-        return DomaConfiguration.DialectType.MSSQL;
+        return DomaSettings.DialectType.MSSQL;
       case "mysql":
       case "mariadb":
-        return DomaConfiguration.DialectType.MYSQL;
+        return DomaSettings.DialectType.MYSQL;
       case "postgresql":
       case "pgsql":
       case "pg":
-        return DomaConfiguration.DialectType.POSTGRES;
+        return DomaSettings.DialectType.POSTGRES;
       default:
         throw new IllegalStateException(
             "Can't infer the dialect from the dbKind \""
@@ -106,11 +119,11 @@ public class DomaConfigurationMerger {
     }
   }
 
-  private void mergeSqlLoadScript() {
-    Optional<String> sqlLoadScript = configuration.sqlLoadScript;
+  private String sqlLoadScript() {
+    Optional<String> sqlLoadScript = buildTimeConfig.sqlLoadScript;
     if (sqlLoadScript.isPresent()) {
-      if (sqlLoadScript.get().equals(InitialScript.NO_FILE)) {
-        configuration.sqlLoadScript = Optional.empty();
+      if (sqlLoadScript.get().equals(DomaBuildTimeConfig.SQL_LOAD_SCRIPT_NO_FILE)) {
+        return null;
       } else {
         Path path = applicationArchives.getRootArchive().getChildPath(sqlLoadScript.get());
         if (path == null || Files.isDirectory(path)) {
@@ -120,19 +133,32 @@ public class DomaConfigurationMerger {
                       + "Remove property or add file to your path.",
                   sqlLoadScript.get()));
         }
+        return sqlLoadScript.get();
       }
     } else {
-      LaunchMode mode = launchMode.getLaunchMode();
-      if (mode == LaunchMode.DEVELOPMENT || mode == LaunchMode.TEST) {
-        Path path = applicationArchives.getRootArchive().getChildPath(InitialScript.DEFAULT);
+      if (launchMode.getLaunchMode().isDevOrTest()) {
+        Path path =
+            applicationArchives
+                .getRootArchive()
+                .getChildPath(DomaBuildTimeConfig.SQL_LOAD_SCRIPT_DEFAULT);
         if (path == null || Files.isDirectory(path)) {
-          configuration.sqlLoadScript = Optional.empty();
+          return null;
         } else {
-          configuration.sqlLoadScript = Optional.of(InitialScript.DEFAULT);
+          return DomaBuildTimeConfig.SQL_LOAD_SCRIPT_DEFAULT;
         }
       } else {
-        configuration.sqlLoadScript = Optional.empty();
+        return null;
       }
     }
+  }
+
+  private DomaSettings.LogSettings log() {
+    DomaBuildTimeConfig.LogBuildTimeConfig log = buildTimeConfig.log;
+    return new DomaSettings.LogSettings(log.sql, log.dao, log.closingFailure);
+  }
+
+  static class DataSourceDependentItems {
+    String dataSourceName;
+    DomaSettings.DialectType dialect;
   }
 }

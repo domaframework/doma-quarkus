@@ -17,7 +17,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.seasar.doma.jdbc.Config;
-import org.seasar.doma.quarkus.runtime.DbConfig;
+import org.seasar.doma.quarkus.runtime.DomaConfig;
 
 public class MultipleConfigsTest {
 
@@ -54,7 +54,7 @@ public class MultipleConfigsTest {
     @org.seasar.doma.quarkus.Config("inventory")
     Config inventoryConfig(
         @io.quarkus.agroal.DataSource("inventory") AgroalDataSource dataSource,
-        @Default DbConfig config) {
+        @Default DomaConfig config) {
       return config.builder().setDataSource(dataSource).setDataSourceName("inventory").build();
     }
   }

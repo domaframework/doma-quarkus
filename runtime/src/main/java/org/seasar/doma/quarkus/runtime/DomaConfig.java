@@ -19,7 +19,7 @@ import org.seasar.doma.jdbc.UnknownColumnHandler;
 import org.seasar.doma.jdbc.dialect.Dialect;
 import org.seasar.doma.jdbc.tx.TransactionManager;
 
-public class DbConfig implements Config {
+public class DomaConfig implements Config {
 
   private final DataSource dataSource;
   private final Dialect dialect;
@@ -43,7 +43,7 @@ public class DbConfig implements Config {
   private final int maxRows;
   private final int queryTimeout;
 
-  public DbConfig(
+  public DomaConfig(
       DataSource dataSource,
       Dialect dialect,
       SqlFileRepository sqlFileRepository,
@@ -348,8 +348,8 @@ public class DbConfig implements Config {
       return this;
     }
 
-    public DbConfig build() {
-      return new DbConfig(
+    public DomaConfig build() {
+      return new DomaConfig(
           dataSource,
           dialect,
           sqlFileRepository,
