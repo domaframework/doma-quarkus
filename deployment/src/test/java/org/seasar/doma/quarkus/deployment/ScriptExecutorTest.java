@@ -14,7 +14,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class InitialScriptLoaderCustomTest {
+public class ScriptExecutorTest {
 
   @RegisterExtension
   static QuarkusUnitTest runner =
@@ -28,10 +28,9 @@ public class InitialScriptLoaderCustomTest {
                                   + "quarkus.datasource.username=USERNAME-NAMED\n"
                                   + "quarkus.datasource.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
                                   + "quarkus.datasource.jdbc.driver=org.h2.Driver\n"
-                                  + "quarkus.doma.sql-load-script=import2.sql\n"
                                   + "quarkus.doma.log.sql=true\n"),
                           "application.properties")
-                      .addAsResource("import2.sql"));
+                      .addAsResource("import.sql"));
 
   @Inject DataSource dataSource;
 
@@ -40,7 +39,7 @@ public class InitialScriptLoaderCustomTest {
     int count = 0;
     try (Connection connection = dataSource.getConnection()) {
       try (Statement statement = connection.createStatement()) {
-        try (ResultSet resultSet = statement.executeQuery("select id from department")) {
+        try (ResultSet resultSet = statement.executeQuery("select id from employee")) {
           while (resultSet.next()) {
             count++;
           }

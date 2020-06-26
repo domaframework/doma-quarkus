@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.jdbc.criteria.Entityql;
 import org.seasar.doma.jdbc.criteria.NativeSql;
-import org.seasar.doma.quarkus.runtime.InitialScriptLoader;
+import org.seasar.doma.quarkus.runtime.ScriptExecutor;
 
 public class InjectConfigTest {
 
@@ -34,7 +34,7 @@ public class InjectConfigTest {
   @Inject Config config;
   @Inject Entityql entityql;
   @Inject NativeSql nativeSql;
-  @Inject InitialScriptLoader scriptLoader;
+  @Inject ScriptExecutor scriptLoader;
 
   @Test
   public void test() {

@@ -23,7 +23,7 @@ import org.jboss.jandex.IndexView;
 import org.seasar.doma.DaoImplementation;
 import org.seasar.doma.quarkus.runtime.DomaProducer;
 import org.seasar.doma.quarkus.runtime.DomaRecorder;
-import org.seasar.doma.quarkus.runtime.InitialScriptLoader;
+import org.seasar.doma.quarkus.runtime.ScriptExecutor;
 
 class DomaProcessor {
 
@@ -82,7 +82,7 @@ class DomaProcessor {
   @BuildStep
   ReflectiveClassBuildItem reflectiveClasses(BeanArchiveIndexBuildItem beanArchiveIndex) {
     List<String> classes = new ArrayList<>();
-    classes.add(InitialScriptLoader.class.getName());
+    classes.add(ScriptExecutor.class.getName());
     IndexView indexView = beanArchiveIndex.getIndex();
     DomaClassScanner scanner = new DomaClassScanner(indexView);
     List<String> scannedClasses = scanner.scan();

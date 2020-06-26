@@ -16,21 +16,23 @@ import org.seasar.doma.jdbc.SqlLogType;
 import org.seasar.doma.jdbc.command.ScriptCommand;
 import org.seasar.doma.jdbc.query.ScriptQuery;
 
-public class InitialScriptLoader {
+public class ScriptExecutor {
 
-  private static final String METHOD_NAME = "load";
+  private static final String METHOD_NAME = "execute";
   private final Config config;
+  private final String path;
 
-  public InitialScriptLoader(Config config, String sqlLoadScript) {
+  public ScriptExecutor(Config config, String path) {
     this.config = Objects.requireNonNull(config);
-    if (sqlLoadScript != null) {
-      load(sqlLoadScript);
+    this.path = path;
+    if (path != null) {
+      execute();
     }
   }
 
-  void load(String path) {
+  private void execute() {
     Method method = getMethod();
-    InitialScriptQuery query = new InitialScriptQuery(path, method);
+    ScriptExecutorQuery query = new ScriptExecutorQuery(path, method);
     query.prepare();
     ScriptCommand command = config.getCommandImplementors().createScriptCommand(method, query);
     command.execute();
@@ -39,18 +41,18 @@ public class InitialScriptLoader {
 
   private Method getMethod() {
     try {
-      return getClass().getDeclaredMethod(METHOD_NAME, String.class);
+      return getClass().getDeclaredMethod(METHOD_NAME);
     } catch (NoSuchMethodException e) {
       throw new IllegalStateException(e);
     }
   }
 
-  public class InitialScriptQuery implements ScriptQuery {
+  public class ScriptExecutorQuery implements ScriptQuery {
     private final String path;
     private final URL url;
     private final Method method;
 
-    public InitialScriptQuery(String path, Method method) {
+    public ScriptExecutorQuery(String path, Method method) {
       this.path = Objects.requireNonNull(path);
       this.url = config.getScriptFileLoader().loadAsURL(path);
       this.method = Objects.requireNonNull(method);

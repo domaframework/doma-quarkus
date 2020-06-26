@@ -254,7 +254,7 @@ public class DomaProducer {
   @Startup
   @ApplicationScoped
   @DefaultBean
-  InitialScriptLoader initialScriptLoader(Config config) {
-    return new InitialScriptLoader(config, sqlLoadScript);
+  ScriptExecutor scriptExecutor(Config config) {
+    return new ScriptExecutor(config, sqlLoadScript);
   }
 }
