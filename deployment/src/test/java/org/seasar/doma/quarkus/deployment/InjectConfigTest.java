@@ -2,9 +2,13 @@ package org.seasar.doma.quarkus.deployment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.quarkus.test.QuarkusUnitTest;
 import javax.inject.Inject;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -35,6 +39,7 @@ public class InjectConfigTest {
   @Inject Entityql entityql;
   @Inject NativeSql nativeSql;
   @Inject ScriptExecutor scriptLoader;
+  @Inject TransactionManager transactionManager;
 
   @Test
   public void test() {
@@ -64,5 +69,20 @@ public class InjectConfigTest {
     assertNotNull(entityql);
     assertNotNull(nativeSql);
     assertNotNull(scriptLoader);
+  }
+
+  @Test
+  public void requiresNew() throws Throwable {
+    var controller = config.getRequiresNewController();
+    var active =
+        controller.requiresNew(
+            () -> {
+              try {
+                return transactionManager.getStatus() == Status.STATUS_ACTIVE;
+              } catch (SystemException e) {
+                throw new RuntimeException(e);
+              }
+            });
+    assertTrue(active);
   }
 }

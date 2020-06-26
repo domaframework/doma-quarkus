@@ -22,6 +22,7 @@ import org.jboss.jandex.DotName;
 import org.seasar.doma.DaoImplementation;
 import org.seasar.doma.quarkus.runtime.DomaProducer;
 import org.seasar.doma.quarkus.runtime.DomaRecorder;
+import org.seasar.doma.quarkus.runtime.JtaRequiresNewController;
 import org.seasar.doma.quarkus.runtime.ScriptExecutor;
 
 class DomaProcessor {
@@ -35,7 +36,7 @@ class DomaProcessor {
 
   @BuildStep
   AdditionalBeanBuildItem additionalBeans() {
-    return new AdditionalBeanBuildItem(DomaProducer.class);
+    return new AdditionalBeanBuildItem(DomaProducer.class, JtaRequiresNewController.class);
   }
 
   @BuildStep

@@ -121,12 +121,6 @@ public class DomaProducer {
 
   @ApplicationScoped
   @DefaultBean
-  RequiresNewController requiresNewController() {
-    return ConfigSupport.defaultRequiresNewController;
-  }
-
-  @ApplicationScoped
-  @DefaultBean
   ClassHelper classHelper() {
     return ConfigSupport.defaultClassHelper;
   }
