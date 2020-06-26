@@ -38,7 +38,7 @@ public class InjectConfigTest {
   @Inject Config config;
   @Inject Entityql entityql;
   @Inject NativeSql nativeSql;
-  @Inject ScriptExecutor scriptLoader;
+  @Inject ScriptExecutor scriptExecutor;
   @Inject TransactionManager transactionManager;
 
   @Test
@@ -68,7 +68,7 @@ public class InjectConfigTest {
     assertEquals(0, config.getQueryTimeout());
     assertNotNull(entityql);
     assertNotNull(nativeSql);
-    assertNotNull(scriptLoader);
+    assertNotNull(scriptExecutor);
   }
 
   @Test
