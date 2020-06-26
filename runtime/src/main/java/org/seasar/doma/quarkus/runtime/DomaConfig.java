@@ -193,29 +193,33 @@ public class DomaConfig implements Config {
     return queryTimeout;
   }
 
-  public Builder builder() {
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static Builder builder(Config config) {
     var builder = new Builder();
-    builder.dataSource = this.dataSource;
-    builder.dialect = this.dialect;
-    builder.sqlFileRepository = this.sqlFileRepository;
-    builder.scriptFileLoader = this.scriptFileLoader;
-    builder.jdbcLogger = this.jdbcLogger;
-    builder.requiresNewController = this.requiresNewController;
-    builder.classHelper = this.classHelper;
-    builder.commandImplementors = this.commandImplementors;
-    builder.queryImplementors = this.queryImplementors;
-    builder.exceptionSqlLogType = this.exceptionSqlLogType;
-    builder.unknownColumnHandler = this.unknownColumnHandler;
-    builder.naming = this.naming;
-    builder.mapKeyNaming = this.mapKeyNaming;
-    builder.commenter = this.commenter;
-    builder.entityListenerProvider = this.entityListenerProvider;
-    builder.transactionManager = this.transactionManager;
-    builder.dataSourceName = this.dataSourceName;
-    builder.batchSize = this.batchSize;
-    builder.fetchSize = this.fetchSize;
-    builder.maxRows = this.maxRows;
-    builder.queryTimeout = this.queryTimeout;
+    builder.setDataSource(config.getDataSource());
+    builder.setDialect(config.getDialect());
+    builder.setSqlFileRepository(config.getSqlFileRepository());
+    builder.setScriptFileLoader(config.getScriptFileLoader());
+    builder.setJdbcLogger(config.getJdbcLogger());
+    builder.setRequiresNewController(config.getRequiresNewController());
+    builder.setClassHelper(config.getClassHelper());
+    builder.setCommandImplementors(config.getCommandImplementors());
+    builder.setQueryImplementors(config.getQueryImplementors());
+    builder.setExceptionSqlLogType(config.getExceptionSqlLogType());
+    builder.setUnknownColumnHandler(config.getUnknownColumnHandler());
+    builder.setNaming(config.getNaming());
+    builder.setMapKeyNaming(config.getMapKeyNaming());
+    builder.setCommenter(config.getCommenter());
+    builder.setEntityListenerProvider(config.getEntityListenerProvider());
+    builder.setTransactionManager(config.getTransactionManager());
+    builder.setDataSourceName(config.getDataSourceName());
+    builder.setBatchSize(config.getBatchSize());
+    builder.setFetchSize(config.getFetchSize());
+    builder.setMaxRows(config.getMaxRows());
+    builder.setQueryTimeout(config.getQueryTimeout());
     return builder;
   }
 

@@ -54,8 +54,11 @@ public class MultipleConfigsTest {
     @org.seasar.doma.quarkus.Config("inventory")
     Config inventoryConfig(
         @io.quarkus.agroal.DataSource("inventory") AgroalDataSource dataSource,
-        @Default DomaConfig config) {
-      return config.builder().setDataSource(dataSource).setDataSourceName("inventory").build();
+        @Default Config config) {
+      return DomaConfig.builder(config)
+          .setDataSource(dataSource)
+          .setDataSourceName("inventory")
+          .build();
     }
   }
 
