@@ -3,9 +3,6 @@ package org.seasar.doma.quarkus.deployment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.quarkus.test.QuarkusUnitTest;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -36,10 +33,10 @@ public class ScriptExecutorTest {
 
   @Test
   public void test() throws Exception {
-    int count = 0;
-    try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement = connection.createStatement()) {
-        try (ResultSet resultSet = statement.executeQuery("select id from employee")) {
+    var count = 0;
+    try (var connection = dataSource.getConnection()) {
+      try (var statement = connection.createStatement()) {
+        try (var resultSet = statement.executeQuery("select id from employee")) {
           while (resultSet.next()) {
             count++;
           }

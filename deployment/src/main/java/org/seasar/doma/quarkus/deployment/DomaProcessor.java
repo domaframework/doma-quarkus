@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
 import org.seasar.doma.DaoImplementation;
 import org.seasar.doma.quarkus.runtime.DomaProducer;
 import org.seasar.doma.quarkus.runtime.DomaRecorder;
@@ -51,7 +50,7 @@ class DomaProcessor {
       List<JdbcDataSourceBuildItem> dataSources,
       ApplicationArchivesBuildItem applicationArchives,
       LaunchModeBuildItem launchMode) {
-    DomaSettingsFactory factory =
+    var factory =
         new DomaSettingsFactory(buildTimeConfig, dataSources, applicationArchives, launchMode);
     return new DomaSettingsBuildItem(factory.create());
   }
@@ -59,7 +58,7 @@ class DomaProcessor {
   @BuildStep
   Optional<HotDeploymentWatchedFileBuildItem> hotDeploymentWatchedFile(
       DomaSettingsBuildItem settings) {
-    String sqlLoadScript = settings.getSettings().sqlLoadScript;
+    var sqlLoadScript = settings.getSettings().sqlLoadScript;
     if (sqlLoadScript == null) {
       return Optional.empty();
     }
@@ -69,12 +68,12 @@ class DomaProcessor {
   @BuildStep
   NativeImageResourceBuildItem nativeImageResources(DomaSettingsBuildItem settings) {
     List<String> resources = new ArrayList<>();
-    String sqlLoadScript = settings.getSettings().sqlLoadScript;
+    var sqlLoadScript = settings.getSettings().sqlLoadScript;
     if (sqlLoadScript != null) {
       resources.add(sqlLoadScript);
     }
-    DomaResourceScanner scanner = new DomaResourceScanner();
-    List<String> scannedResources = scanner.scan();
+    var scanner = new DomaResourceScanner();
+    var scannedResources = scanner.scan();
     resources.addAll(scannedResources);
     return new NativeImageResourceBuildItem(resources);
   }
@@ -83,9 +82,9 @@ class DomaProcessor {
   ReflectiveClassBuildItem reflectiveClasses(BeanArchiveIndexBuildItem beanArchiveIndex) {
     List<String> classes = new ArrayList<>();
     classes.add(ScriptExecutor.class.getName());
-    IndexView indexView = beanArchiveIndex.getIndex();
-    DomaClassScanner scanner = new DomaClassScanner(indexView);
-    List<String> scannedClasses = scanner.scan();
+    var indexView = beanArchiveIndex.getIndex();
+    var scanner = new DomaClassScanner(indexView);
+    var scannedClasses = scanner.scan();
     classes.addAll(scannedClasses);
     return new ReflectiveClassBuildItem(true, true, classes.toArray(new String[0]));
   }

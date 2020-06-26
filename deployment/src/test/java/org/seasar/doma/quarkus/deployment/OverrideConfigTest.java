@@ -48,7 +48,6 @@ public class OverrideConfigTest {
 
   @Test
   void test() {
-    System.out.println(config);
     assertTrue(config.toString().contains("MyConfig"));
   }
 }

@@ -44,17 +44,20 @@ public class HotReplacementTest {
 
   @Test
   public void sql() {
-    RestAssured.when().get("/hot/sql").then().body(is("select\n*\nfrom\nemployee"));
+    RestAssured.when().get("/hot/sql").then().body(is("select\n*\nfrom\nemployee\n"));
     runner.modifyResourceFile(
         HotReplacementResource.SQL_FILE, s -> s.replaceAll("employee", "department"));
-    RestAssured.when().get("/hot/sql").then().body(is("select\n*\nfrom\ndepartment"));
+    RestAssured.when().get("/hot/sql").then().body(is("select\n*\nfrom\ndepartment\n"));
   }
 
   @Test
   public void script() {
-    RestAssured.when().get("/hot/script").then().body(is("create table employee (\n  id int\n)"));
+    RestAssured.when().get("/hot/script").then().body(is("create table employee (\n  id int\n)\n"));
     runner.modifyResourceFile(
         HotReplacementResource.SCRIPT_FILE, s -> s.replaceAll("employee", "department"));
-    RestAssured.when().get("/hot/script").then().body(is("create table department (\n  id int\n)"));
+    RestAssured.when()
+        .get("/hot/script")
+        .then()
+        .body(is("create table department (\n  id int\n)\n"));
   }
 }

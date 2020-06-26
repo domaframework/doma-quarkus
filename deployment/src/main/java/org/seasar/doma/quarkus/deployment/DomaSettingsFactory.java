@@ -4,10 +4,8 @@ import io.quarkus.agroal.deployment.JdbcDataSourceBuildItem;
 import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.jboss.logging.Logger;
 import org.seasar.doma.quarkus.runtime.DomaSettings;
@@ -33,8 +31,8 @@ public class DomaSettingsFactory {
   }
 
   DomaSettings create() {
-    DomaSettings settings = new DomaSettings();
-    DataSourceDependentItems items = dataSourceDependentItems();
+    var settings = new DomaSettings();
+    var items = dataSourceDependentItems();
     settings.dataSourceName = items.dataSourceName;
     settings.dialect = items.dialect;
     settings.sqlFileRepository = buildTimeConfig.sqlFileRepository;
@@ -51,21 +49,21 @@ public class DomaSettingsFactory {
   }
 
   private DataSourceDependentItems dataSourceDependentItems() {
-    DataSourceDependentItems items = new DataSourceDependentItems();
-    Optional<String> dataSourceName = buildTimeConfig.datasourceName;
-    Optional<DomaSettings.DialectType> dialect = buildTimeConfig.dialect;
+    var items = new DataSourceDependentItems();
+    var dataSourceName = buildTimeConfig.datasourceName;
+    var dialect = buildTimeConfig.dialect;
 
     if (dataSourceName.isPresent()) {
       items.dataSourceName = dataSourceName.get();
       if (dialect.isPresent()) {
         items.dialect = dialect.get();
       } else {
-        Optional<JdbcDataSourceBuildItem> dataSource =
+        var dataSource =
             dataSources.stream()
                 .filter(it -> dataSourceName.get().equals(it.getName()))
                 .findFirst();
         if (dataSource.isPresent()) {
-          String dbKind = dataSource.get().getDbKind();
+          var dbKind = dataSource.get().getDbKind();
           items.dialect = inferDialectType(dbKind);
         } else {
           throw new IllegalStateException(
@@ -76,7 +74,7 @@ public class DomaSettingsFactory {
         }
       }
     } else {
-      Optional<JdbcDataSourceBuildItem> dataSource =
+      var dataSource =
           Stream.concat(
                   dataSources.stream().filter(JdbcDataSourceBuildItem::isDefault),
                   dataSources.stream())
@@ -86,7 +84,7 @@ public class DomaSettingsFactory {
         if (dialect.isPresent()) {
           items.dialect = dialect.get();
         } else {
-          String dbKind = dataSource.get().getDbKind();
+          var dbKind = dataSource.get().getDbKind();
           items.dialect = inferDialectType(dbKind);
         }
       } else {
@@ -120,12 +118,12 @@ public class DomaSettingsFactory {
   }
 
   private String sqlLoadScript() {
-    Optional<String> sqlLoadScript = buildTimeConfig.sqlLoadScript;
+    var sqlLoadScript = buildTimeConfig.sqlLoadScript;
     if (sqlLoadScript.isPresent()) {
       if (sqlLoadScript.get().equals(DomaBuildTimeConfig.SQL_LOAD_SCRIPT_NO_FILE)) {
         return null;
       } else {
-        Path path = applicationArchives.getRootArchive().getChildPath(sqlLoadScript.get());
+        var path = applicationArchives.getRootArchive().getChildPath(sqlLoadScript.get());
         if (path == null || Files.isDirectory(path)) {
           throw new IllegalStateException(
               String.format(
@@ -137,7 +135,7 @@ public class DomaSettingsFactory {
       }
     } else {
       if (launchMode.getLaunchMode().isDevOrTest()) {
-        Path path =
+        var path =
             applicationArchives
                 .getRootArchive()
                 .getChildPath(DomaBuildTimeConfig.SQL_LOAD_SCRIPT_DEFAULT);
@@ -153,7 +151,7 @@ public class DomaSettingsFactory {
   }
 
   private DomaSettings.LogSettings log() {
-    DomaBuildTimeConfig.LogBuildTimeConfig log = buildTimeConfig.log;
+    var log = buildTimeConfig.log;
     return new DomaSettings.LogSettings(log.sql, log.dao, log.closingFailure);
   }
 

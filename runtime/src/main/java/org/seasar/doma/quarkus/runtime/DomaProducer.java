@@ -205,7 +205,7 @@ public class DomaProducer {
       EntityListenerProvider entityListenerProvider,
       TransactionManager transactionManager) {
     Objects.requireNonNull(dataSourceName);
-    DataSource dataSource = selectDataSource(dataSourceInstance, dataSourceName);
+    var dataSource = selectDataSource(dataSourceInstance, dataSourceName);
     return new DomaConfig(
         dataSource,
         dialect,

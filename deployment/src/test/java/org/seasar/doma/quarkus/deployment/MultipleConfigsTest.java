@@ -66,9 +66,9 @@ public class MultipleConfigsTest {
     assertNotNull(inventoryConfig);
     assertNotNull(inventoryConfig.getDataSource());
     assertNotEquals(defaultConfig, inventoryConfig);
-    Config selectedDefaultConfig = configInstance.select(Default.Literal.INSTANCE).get();
+    var selectedDefaultConfig = configInstance.select(Default.Literal.INSTANCE).get();
     assertEquals(defaultConfig, selectedDefaultConfig);
-    Config selectedInventoryConfig =
+    var selectedInventoryConfig =
         configInstance.select(new org.seasar.doma.quarkus.Config.Literal("inventory")).get();
     assertEquals(inventoryConfig, selectedInventoryConfig);
   }

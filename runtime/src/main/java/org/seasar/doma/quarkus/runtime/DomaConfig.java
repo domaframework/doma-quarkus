@@ -194,7 +194,7 @@ public class DomaConfig implements Config {
   }
 
   public Builder builder() {
-    Builder builder = new Builder();
+    var builder = new Builder();
     builder.dataSource = this.dataSource;
     builder.dialect = this.dialect;
     builder.sqlFileRepository = this.sqlFileRepository;

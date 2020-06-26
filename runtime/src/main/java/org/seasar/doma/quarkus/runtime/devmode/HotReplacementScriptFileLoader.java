@@ -21,8 +21,8 @@ public class HotReplacementScriptFileLoader implements ScriptFileLoader {
 
   @Override
   public URL loadAsURL(String path) {
-    for (Path dir : resourcesDirs) {
-      Path file = dir.resolve(path);
+    for (var dir : resourcesDirs) {
+      var file = dir.resolve(path);
       if (Files.exists(file)) {
         try {
           return file.toUri().toURL();

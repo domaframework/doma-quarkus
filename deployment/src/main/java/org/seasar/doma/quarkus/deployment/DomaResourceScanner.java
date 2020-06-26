@@ -34,10 +34,10 @@ public class DomaResourceScanner {
     try {
       Files.walkFileTree(
           resource,
-          new SimpleFileVisitor<Path>() {
+          new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-              String fileName = resource.relativize(file).toString();
+              var fileName = resource.relativize(file).toString();
               if (fileName.endsWith(".sql") || fileName.endsWith(".script")) {
                 LOGGER.debugf("resource found: %s", fileName);
                 files.add(fileName);

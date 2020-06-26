@@ -21,7 +21,7 @@ public class DomaRecorder {
 
   public BeanContainerListener configure(DomaSettings domaSettings, LaunchMode launchMode) {
     return beanContainer -> {
-      DomaProducer producer = beanContainer.instance(DomaProducer.class);
+      var producer = beanContainer.instance(DomaProducer.class);
       if (launchMode == LaunchMode.DEVELOPMENT) {
         producer.setSqlFileRepository(
             new HotReplacementSqlFileRepository(hotReplacementResourcesDirs));

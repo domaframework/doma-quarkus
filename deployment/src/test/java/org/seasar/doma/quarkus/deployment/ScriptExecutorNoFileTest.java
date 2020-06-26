@@ -3,9 +3,6 @@ package org.seasar.doma.quarkus.deployment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.quarkus.test.QuarkusUnitTest;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -38,9 +35,9 @@ public class ScriptExecutorNoFileTest {
   @Test
   public void test() throws Exception {
     Integer count = null;
-    try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement = connection.createStatement()) {
-        try (ResultSet resultSet =
+    try (var connection = dataSource.getConnection()) {
+      try (var statement = connection.createStatement()) {
+        try (var resultSet =
             statement.executeQuery(
                 "select count(*) from information_schema.tables where table_name = 'EMPLOYEE'")) {
           if (resultSet.next()) {

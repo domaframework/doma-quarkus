@@ -28,11 +28,11 @@ public class HotReplacementSqlFileRepository extends AbstractSqlFileRepository {
 
   @Override
   protected String getSql(String path) {
-    for (Path dir : resourcesDirs) {
-      Path file = dir.resolve(path);
+    for (var dir : resourcesDirs) {
+      var file = dir.resolve(path);
       if (Files.exists(file)) {
         try {
-          return String.join("\n", Files.readAllLines(file));
+          return Files.readString(file);
         } catch (IOException e) {
           throw new UncheckedIOException(e);
         }

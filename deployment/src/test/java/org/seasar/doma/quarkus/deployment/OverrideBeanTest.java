@@ -50,8 +50,7 @@ public class OverrideBeanTest {
 
     @ApplicationScoped
     TransactionManager transactionManager(DataSource dataSource, JdbcLogger jdbcLogger) {
-      LocalTransactionDataSource localTransactionDataSource =
-          new LocalTransactionDataSource(dataSource);
+      var localTransactionDataSource = new LocalTransactionDataSource(dataSource);
       return new LocalTransactionManager(
           localTransactionDataSource.getLocalTransaction(jdbcLogger));
     }

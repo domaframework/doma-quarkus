@@ -1,7 +1,6 @@
 package org.seasar.doma.quarkus.runtime;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
@@ -13,7 +12,6 @@ import org.seasar.doma.internal.Constants;
 import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.jdbc.Sql;
 import org.seasar.doma.jdbc.SqlLogType;
-import org.seasar.doma.jdbc.command.ScriptCommand;
 import org.seasar.doma.jdbc.query.ScriptQuery;
 
 public class ScriptExecutor {
@@ -31,10 +29,10 @@ public class ScriptExecutor {
   }
 
   private void execute() {
-    Method method = getMethod();
-    ScriptExecutorQuery query = new ScriptExecutorQuery(path, method);
+    var method = getMethod();
+    var query = new ScriptExecutorQuery(path, method);
     query.prepare();
-    ScriptCommand command = config.getCommandImplementors().createScriptCommand(method, query);
+    var command = config.getCommandImplementors().createScriptCommand(method, query);
     command.execute();
     query.complete();
   }
@@ -67,7 +65,7 @@ public class ScriptExecutor {
     public Supplier<Reader> getReaderSupplier() {
       return () -> {
         try {
-          InputStream inputStream = url.openStream();
+          var inputStream = url.openStream();
           return new InputStreamReader(inputStream, Constants.UTF_8);
         } catch (IOException e) {
           throw new UncheckedIOException(e);

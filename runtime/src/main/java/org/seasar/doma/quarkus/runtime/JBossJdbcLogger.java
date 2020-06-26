@@ -27,7 +27,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       String callerMethodName,
       Throwable throwable,
       Supplier<String> messageSupplier) {
-    Logger logger = Logger.getLogger(callerClassName);
+    var logger = Logger.getLogger(callerClassName);
     logger.log(level, messageSupplier.get(), throwable);
   }
 
@@ -39,7 +39,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.sql) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
       super.logSql(callerClassName, callerMethodName, sql, level, messageSupplier);
@@ -54,7 +54,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.dao) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
       super.logDaoMethodEntering(callerClassName, callerMethodName, args, level, messageSupplier);
@@ -69,7 +69,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.dao) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
       super.logDaoMethodExiting(callerClassName, callerMethodName, result, level, messageSupplier);
@@ -84,7 +84,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.dao) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
       super.logDaoMethodThrowing(callerClassName, callerMethodName, e, level, messageSupplier);
@@ -99,7 +99,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.dao) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
       super.logSqlExecutionSkipping(
@@ -115,7 +115,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.closingFailure) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
       super.logConnectionClosingFailure(
@@ -131,7 +131,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.closingFailure) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
 
@@ -148,7 +148,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Logger.Level level,
       Supplier<String> messageSupplier) {
     if (logSettings.closingFailure) {
-      Logger logger = Logger.getLogger(callerClassName);
+      var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
       super.logResultSetClosingFailure(
