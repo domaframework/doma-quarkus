@@ -20,6 +20,8 @@ public class DomaRecorder {
   }
 
   public BeanContainerListener configure(DomaSettings domaSettings, LaunchMode launchMode) {
+    Objects.requireNonNull(domaSettings);
+    Objects.requireNonNull(launchMode);
     return beanContainer -> {
       var producer = beanContainer.instance(DomaProducer.class);
       if (launchMode == LaunchMode.DEVELOPMENT) {
