@@ -1,23 +1,28 @@
 package org.seasar.doma.quarkus.runtime;
 
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.function.Supplier;
 import org.jboss.logging.Logger;
 import org.seasar.doma.jdbc.AbstractJdbcLogger;
 import org.seasar.doma.jdbc.Sql;
 import org.seasar.doma.jdbc.SqlExecutionSkipCause;
 
-public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
+public class DomaLogger extends AbstractJdbcLogger<Logger.Level> {
 
-  private final DomaSettings.LogSettings logSettings;
+  private final LogPreferences logPreferences;
 
-  JBossJdbcLogger() {
-    this(new DomaSettings.LogSettings());
+  DomaLogger() {
+    this(new LogPreferences());
   }
 
-  public JBossJdbcLogger(DomaSettings.LogSettings logSettings) {
+  public DomaLogger(LogPreferences logPreferences) {
     super(Logger.Level.DEBUG);
-    this.logSettings = logSettings;
+    this.logPreferences = Objects.requireNonNull(logPreferences);
+  }
+
+  public LogPreferences getLogPreferences() {
+    return logPreferences;
   }
 
   @Override
@@ -28,7 +33,9 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Throwable throwable,
       Supplier<String> messageSupplier) {
     var logger = Logger.getLogger(callerClassName);
-    logger.log(level, messageSupplier.get(), throwable);
+    if (logger.isEnabled(level)) {
+      logger.log(level, messageSupplier.get(), throwable);
+    }
   }
 
   @Override
@@ -38,7 +45,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Sql<?> sql,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.sql) {
+    if (logPreferences.isSql()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -53,7 +60,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Object[] args,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.dao) {
+    if (logPreferences.isDao()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -68,7 +75,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       Object result,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.dao) {
+    if (logPreferences.isDao()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -83,7 +90,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       RuntimeException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.dao) {
+    if (logPreferences.isDao()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
@@ -98,7 +105,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SqlExecutionSkipCause cause,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.dao) {
+    if (logPreferences.isDao()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get());
     } else {
@@ -114,7 +121,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SQLException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.closingFailure) {
+    if (logPreferences.isClosingFailure()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
@@ -130,11 +137,10 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SQLException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.closingFailure) {
+    if (logPreferences.isClosingFailure()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {
-
       super.logStatementClosingFailure(
           callerClassName, callerMethodName, e, level, messageSupplier);
     }
@@ -147,7 +153,7 @@ public class JBossJdbcLogger extends AbstractJdbcLogger<Logger.Level> {
       SQLException e,
       Logger.Level level,
       Supplier<String> messageSupplier) {
-    if (logSettings.closingFailure) {
+    if (logPreferences.isClosingFailure()) {
       var logger = Logger.getLogger(callerClassName);
       logger.info(messageSupplier.get(), e);
     } else {

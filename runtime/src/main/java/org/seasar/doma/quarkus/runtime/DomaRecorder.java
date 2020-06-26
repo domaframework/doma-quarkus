@@ -42,7 +42,7 @@ public class DomaRecorder {
       producer.setMaxRows(domaSettings.maxRows);
       producer.setQueryTimeout(domaSettings.queryTimeout);
       producer.setSqlLoadScript(domaSettings.sqlLoadScript);
-      producer.setLogSettings(domaSettings.log);
+      producer.setLogPreferences(domaSettings.log.asLogPreferences());
     };
   }
 }

@@ -44,7 +44,7 @@ public class DomaProducer {
   private volatile int maxRows;
   private volatile int queryTimeout;
   private volatile String sqlLoadScript;
-  private volatile DomaSettings.LogSettings logSettings;
+  private volatile LogPreferences logPreferences;
 
   public void setSqlFileRepository(SqlFileRepository sqlFileRepository) {
     this.sqlFileRepository = Objects.requireNonNull(sqlFileRepository);
@@ -90,8 +90,8 @@ public class DomaProducer {
     this.sqlLoadScript = sqlLoadScript;
   }
 
-  public void setLogSettings(DomaSettings.LogSettings logSettings) {
-    this.logSettings = Objects.requireNonNull(logSettings);
+  public void setLogPreferences(LogPreferences logPreferences) {
+    this.logPreferences = Objects.requireNonNull(logPreferences);
   }
 
   @ApplicationScoped
@@ -114,9 +114,8 @@ public class DomaProducer {
 
   @ApplicationScoped
   @DefaultBean
-  JdbcLogger jdbcLogger() {
-    Objects.requireNonNull(logSettings);
-    return new JBossJdbcLogger(logSettings);
+  DomaLogger jdbcLogger(LogPreferences logPreferences) {
+    return new DomaLogger(logPreferences);
   }
 
   @ApplicationScoped
@@ -177,6 +176,12 @@ public class DomaProducer {
   @DefaultBean
   TransactionManager transactionManager() {
     return new UnsupportedTransactionManager();
+  }
+
+  @Singleton
+  @DefaultBean
+  LogPreferences logPreferences() {
+    return Objects.requireNonNull(logPreferences);
   }
 
   @ApplicationScoped

@@ -39,6 +39,10 @@ public class DomaSettings {
       this.dao = dao;
       this.closingFailure = closingFailure;
     }
+
+    public LogPreferences asLogPreferences() {
+      return new LogPreferences(sql, dao, closingFailure);
+    }
   }
 
   public enum DialectType {
