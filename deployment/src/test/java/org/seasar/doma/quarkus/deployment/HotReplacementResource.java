@@ -15,10 +15,10 @@ import org.seasar.doma.jdbc.dialect.Dialect;
 public class HotReplacementResource {
 
   public static final String SQL_FILE =
-      "META-INF/org/seasar/doma/quarkus/deployment/MyEntityDao/select.sql";
+      "META-INF/org/seasar/doma/quarkus/deployment/model/MyEntityDao/select.sql";
 
   public static final String SCRIPT_FILE =
-      "META-INF/org/seasar/doma/quarkus/deployment/MyEntityDao/create.script";
+      "META-INF/org/seasar/doma/quarkus/deployment/model/MyEntityDao/create.script";
 
   @Inject Dialect dialect;
   @Inject SqlFileRepository sqlFileRepository;
