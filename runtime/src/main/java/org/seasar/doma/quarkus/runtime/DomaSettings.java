@@ -43,6 +43,18 @@ public class DomaSettings {
     public LogPreferences asLogPreferences() {
       return new LogPreferences(sql, dao, closingFailure);
     }
+
+    @Override
+    public String toString() {
+      return "LogSettings{"
+          + "sql="
+          + sql
+          + ", dao="
+          + dao
+          + ", closingFailure="
+          + closingFailure
+          + '}';
+    }
   }
 
   public enum DialectType {
