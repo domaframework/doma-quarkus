@@ -24,6 +24,7 @@ import org.seasar.doma.quarkus.runtime.DomaProducer;
 import org.seasar.doma.quarkus.runtime.DomaRecorder;
 import org.seasar.doma.quarkus.runtime.JtaRequiresNewController;
 import org.seasar.doma.quarkus.runtime.ScriptExecutor;
+import org.seasar.doma.quarkus.runtime.UnsupportedTransactionManager;
 
 class DomaProcessor {
 
@@ -36,7 +37,8 @@ class DomaProcessor {
 
   @BuildStep
   AdditionalBeanBuildItem additionalBeans() {
-    return new AdditionalBeanBuildItem(DomaProducer.class, JtaRequiresNewController.class);
+    return new AdditionalBeanBuildItem(
+        DomaProducer.class, JtaRequiresNewController.class, UnsupportedTransactionManager.class);
   }
 
   @BuildStep

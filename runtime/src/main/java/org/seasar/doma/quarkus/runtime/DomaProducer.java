@@ -172,12 +172,6 @@ public class DomaProducer {
     return Objects.requireNonNull(exceptionSqlLogType);
   }
 
-  @ApplicationScoped
-  @DefaultBean
-  TransactionManager transactionManager() {
-    return new UnsupportedTransactionManager();
-  }
-
   @Singleton
   @DefaultBean
   LogPreferences logPreferences() {
