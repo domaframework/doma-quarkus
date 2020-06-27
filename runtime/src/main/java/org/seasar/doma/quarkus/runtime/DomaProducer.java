@@ -180,7 +180,7 @@ public class DomaProducer {
 
   @ApplicationScoped
   @DefaultBean
-  DomaConfig dbConfig(
+  DomaConfig config(
       @Any Instance<DataSource> dataSourceInstance,
       Dialect dialect,
       SqlFileRepository sqlFileRepository,
