@@ -1,12 +1,18 @@
 package org.seasar.doma.quarkus.deployment;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import io.quarkus.agroal.deployment.JdbcDataSourceBuildItem;
 import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.function.Function;
 import org.jboss.logging.Logger;
 import org.seasar.doma.quarkus.runtime.DomaSettings;
 
@@ -25,78 +31,71 @@ public class DomaSettingsFactory {
       ApplicationArchivesBuildItem applicationArchives,
       LaunchModeBuildItem launchMode) {
     this.buildTimeConfig = Objects.requireNonNull(buildTimeConfig);
-    this.dataSources = Objects.requireNonNull(dataSources);
+    this.dataSources = new ArrayList<>(Objects.requireNonNull(dataSources));
     this.applicationArchives = Objects.requireNonNull(applicationArchives);
     this.launchMode = Objects.requireNonNull(launchMode);
   }
 
   DomaSettings create() {
     var settings = new DomaSettings();
-    var items = dataSourceDependentItems();
-    settings.dataSourceName = items.dataSourceName;
-    settings.dialect = items.dialect;
     settings.sqlFileRepository = buildTimeConfig.sqlFileRepository;
     settings.naming = buildTimeConfig.naming;
     settings.exceptionSqlLogType = buildTimeConfig.exceptionSqlLogType;
-    settings.sqlLoadScript = sqlLoadScript();
-    settings.batchSize = buildTimeConfig.batchSize;
-    settings.fetchSize = buildTimeConfig.fetchSize;
-    settings.maxRows = buildTimeConfig.maxRows;
-    settings.queryTimeout = buildTimeConfig.queryTimeout;
+    settings.dataSources = dataSources();
     settings.log = log();
+    if (dataSources.isEmpty()) {
+      throw new IllegalStateException("The quarkus.datasource is empty. Specify it.");
+    }
     LOGGER.debugf("settings: %s", settings);
     return settings;
   }
 
-  private DataSourceDependentItems dataSourceDependentItems() {
-    var items = new DataSourceDependentItems();
-    var dataSourceName = buildTimeConfig.datasourceName;
-    var dialect = buildTimeConfig.dialect;
-
-    if (dataSourceName.isPresent()) {
-      items.dataSourceName = dataSourceName.get();
-      if (dialect.isPresent()) {
-        items.dialect = dialect.get();
-      } else {
-        var dataSource =
-            dataSources.stream()
-                .filter(it -> dataSourceName.get().equals(it.getName()))
-                .findFirst();
-        if (dataSource.isPresent()) {
-          var dbKind = dataSource.get().getDbKind();
-          items.dialect = inferDialectType(dbKind);
-        } else {
-          throw new IllegalStateException(
-              String.format(
-                  "'quarkus.doma.datasource-name=%s' is found, "
-                      + "but 'quarkus.datasource.\"datasource-name\"' is not found.",
-                  dataSourceName.get()));
-        }
-      }
-    } else {
-      var dataSource =
-          Stream.concat(
-                  dataSources.stream().filter(JdbcDataSourceBuildItem::isDefault),
-                  dataSources.stream())
-              .findFirst();
-      if (dataSource.isPresent()) {
-        items.dataSourceName = dataSource.get().getName();
-        if (dialect.isPresent()) {
-          items.dialect = dialect.get();
-        } else {
-          var dbKind = dataSource.get().getDbKind();
-          items.dialect = inferDialectType(dbKind);
-        }
-      } else {
-        throw new IllegalStateException(
-            "The quarkus.datasource is not found. "
-                + "Specify the configuration in your application.properties.");
-      }
-    }
-    return items;
+  private List<DomaSettings.DataSourceSettings> dataSources() {
+    var namedDataSources =
+        dataSources.stream()
+            .collect(
+                toMap(
+                    JdbcDataSourceBuildItem::getName,
+                    Function.identity(),
+                    (a, b) -> a,
+                    LinkedHashMap::new));
+    return namedDataSources.entrySet().stream()
+        .map(
+            e -> {
+              var name = e.getKey();
+              var dataSource = e.getValue();
+              DomaBuildTimeConfig.DataSourceBuildTimeConfig dataSourceBuildTimeConfig;
+              if (dataSource.isDefault()) {
+                dataSourceBuildTimeConfig = buildTimeConfig.defaultDataSource;
+              } else {
+                dataSourceBuildTimeConfig = buildTimeConfig.namedDataSources.get(name);
+                if (dataSourceBuildTimeConfig == null) {
+                  dataSourceBuildTimeConfig = new DomaBuildTimeConfig.DataSourceBuildTimeConfig();
+                }
+              }
+              return createDataSourceSettings(dataSource, dataSourceBuildTimeConfig);
+            })
+        .collect(toList());
   }
 
-  private DomaSettings.DialectType inferDialectType(String dbKind) {
+  private DomaSettings.DataSourceSettings createDataSourceSettings(
+      JdbcDataSourceBuildItem dataSource,
+      DomaBuildTimeConfig.DataSourceBuildTimeConfig dataSourceBuildTimeConfig) {
+    var settings = new DomaSettings.DataSourceSettings();
+    settings.name = dataSource.getName();
+    settings.isDefault = dataSource.isDefault();
+    settings.dialect =
+        dataSourceBuildTimeConfig.dialect.orElseGet(
+            () -> resolveDialectType(dataSource.getDbKind()));
+    settings.batchSize = dataSourceBuildTimeConfig.batchSize;
+    settings.fetchSize = dataSourceBuildTimeConfig.fetchSize;
+    settings.maxRows = dataSourceBuildTimeConfig.maxRows;
+    settings.queryTimeout = dataSourceBuildTimeConfig.queryTimeout;
+    settings.sqlLoadScript = resolveSqlLoadScript(dataSourceBuildTimeConfig.sqlLoadScript);
+    return settings;
+  }
+
+  private DomaSettings.DialectType resolveDialectType(String dbKind) {
     switch (dbKind) {
       case "h2":
         return DomaSettings.DialectType.H2;
@@ -117,8 +116,7 @@ public class DomaSettingsFactory {
     }
   }
 
-  private String sqlLoadScript() {
-    var sqlLoadScript = buildTimeConfig.sqlLoadScript;
+  private String resolveSqlLoadScript(Optional<String> sqlLoadScript) {
     if (sqlLoadScript.isPresent()) {
       if (sqlLoadScript.get().equals(DomaBuildTimeConfig.SQL_LOAD_SCRIPT_NO_FILE)) {
         return null;
@@ -153,10 +151,5 @@ public class DomaSettingsFactory {
   private DomaSettings.LogSettings log() {
     var log = buildTimeConfig.log;
     return new DomaSettings.LogSettings(log.sql, log.dao, log.closingFailure);
-  }
-
-  static class DataSourceDependentItems {
-    String dataSourceName;
-    DomaSettings.DialectType dialect;
   }
 }

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.quarkus.datasource.common.runtime.DataSourceUtil;
 import io.quarkus.test.QuarkusUnitTest;
 import javax.inject.Inject;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -27,15 +28,14 @@ public class ApplicationPropertiesTest {
                       .addClasses()
                       .add(
                           new StringAsset(
-                              "quarkus.datasource.sales.db-kind=h2\n"
-                                  + "quarkus.datasource.sales.username=USERNAME-NAMED\n"
-                                  + "quarkus.datasource.sales.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
-                                  + "quarkus.datasource.sales.jdbc.driver=org.h2.Driver\n"
-                                  + "quarkus.doma.dialect=postgres\n"
+                              "quarkus.datasource.db-kind=h2\n"
+                                  + "quarkus.datasource.username=USERNAME-NAMED\n"
+                                  + "quarkus.datasource.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
+                                  + "quarkus.datasource.jdbc.driver=org.h2.Driver\n"
                                   + "quarkus.doma.sql-file-repository=no-cache\n"
                                   + "quarkus.doma.naming=upper-case\n"
                                   + "quarkus.doma.exception-sql-log-type=raw\n"
-                                  + "quarkus.doma.datasource-name=sales\n"
+                                  + "quarkus.doma.dialect=postgres\n"
                                   + "quarkus.doma.batch-size=10\n"
                                   + "quarkus.doma.fetch-size=20\n"
                                   + "quarkus.doma.max-rows=30\n"
@@ -56,7 +56,7 @@ public class ApplicationPropertiesTest {
     assertTrue(config.getSqlFileRepository().toString().contains("NoCacheSqlFileRepository"));
     assertEquals(Naming.UPPER_CASE, config.getNaming());
     assertEquals(SqlLogType.RAW, config.getExceptionSqlLogType());
-    assertEquals("sales", config.getDataSourceName());
+    assertEquals(DataSourceUtil.DEFAULT_DATASOURCE_NAME, config.getDataSourceName());
     assertEquals(10, config.getBatchSize());
     assertEquals(20, config.getFetchSize());
     assertEquals(30, config.getMaxRows());

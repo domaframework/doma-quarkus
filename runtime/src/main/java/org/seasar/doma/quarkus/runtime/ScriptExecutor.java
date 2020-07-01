@@ -1,137 +1,53 @@
 package org.seasar.doma.quarkus.runtime;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
-import java.lang.reflect.Method;
-import java.net.URL;
+import io.quarkus.agroal.runtime.DataSources;
+import io.quarkus.arc.DefaultBean;
+import io.quarkus.runtime.StartupEvent;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
-import org.seasar.doma.internal.Constants;
-import org.seasar.doma.jdbc.Config;
-import org.seasar.doma.jdbc.Sql;
-import org.seasar.doma.jdbc.SqlLogType;
-import org.seasar.doma.jdbc.query.ScriptQuery;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import org.jboss.logging.Logger;
+import org.seasar.doma.internal.util.ResourceUtil;
 
+@ApplicationScoped
+@DefaultBean
 public class ScriptExecutor {
 
-  private static final String METHOD_NAME = "execute";
-  private final Config config;
-  private final String path;
+  private static Logger LOGGER = Logger.getLogger(ScriptExecutor.class.getName());
 
-  public ScriptExecutor(Config config, String path) {
-    this.config = Objects.requireNonNull(config);
-    this.path = path;
-    if (path != null) {
-      execute();
+  private final Map<String, String> namedSqlLoadScripts;
+
+  @Inject
+  public ScriptExecutor(
+      @Named("doma.namedSqlLoadScripts") Map<String, String> namedSqlLoadScripts) {
+    Objects.requireNonNull(namedSqlLoadScripts);
+    this.namedSqlLoadScripts = Collections.unmodifiableMap(namedSqlLoadScripts);
+  }
+
+  void onStartup(@Observes StartupEvent event) throws Exception {
+    for (var entry : namedSqlLoadScripts.entrySet()) {
+      var name = entry.getKey();
+      var path = entry.getValue();
+      var dataSource = DataSources.fromName(name);
+      if (dataSource == null) {
+        throw new IllegalStateException(String.format("The datasource '%s' is not found.", name));
+      }
+      execute(dataSource, path);
     }
   }
 
-  private void execute() {
-    var method = getMethod();
-    var query = new ScriptExecutorQuery(path, method);
-    query.prepare();
-    var command = config.getCommandImplementors().createScriptCommand(method, query);
-    command.execute();
-    query.complete();
-  }
-
-  private Method getMethod() {
-    try {
-      return getClass().getDeclaredMethod(METHOD_NAME);
-    } catch (NoSuchMethodException e) {
-      throw new IllegalStateException(e);
+  private void execute(DataSource dataSource, String path) throws Exception {
+    LOGGER.infof("Execute %s", path);
+    var sql = ResourceUtil.getResourceAsString(path);
+    try (var connection = dataSource.getConnection()) {
+      try (var statement = connection.createStatement()) {
+        statement.execute(sql);
+      }
     }
-  }
-
-  public class ScriptExecutorQuery implements ScriptQuery {
-    private final String path;
-    private final URL url;
-    private final Method method;
-
-    public ScriptExecutorQuery(String path, Method method) {
-      this.path = Objects.requireNonNull(path);
-      this.url = config.getScriptFileLoader().loadAsURL(path);
-      this.method = Objects.requireNonNull(method);
-    }
-
-    @Override
-    public URL getScriptFileUrl() {
-      return url;
-    }
-
-    @Override
-    public Supplier<Reader> getReaderSupplier() {
-      return () -> {
-        try {
-          var inputStream = url.openStream();
-          return new InputStreamReader(inputStream, Constants.UTF_8);
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        }
-      };
-    }
-
-    @Override
-    public String getScriptFilePath() {
-      return path;
-    }
-
-    @Override
-    public String getBlockDelimiter() {
-      return config.getDialect().getScriptBlockDelimiter();
-    }
-
-    @Override
-    public boolean getHaltOnError() {
-      return true;
-    }
-
-    @Override
-    public SqlLogType getSqlLogType() {
-      return SqlLogType.FORMATTED;
-    }
-
-    @Override
-    public Sql<?> getSql() {
-      return null;
-    }
-
-    @Override
-    public String getClassName() {
-      return method.getDeclaringClass().getName();
-    }
-
-    @Override
-    public String getMethodName() {
-      return method.getName();
-    }
-
-    @Override
-    public Method getMethod() {
-      return method;
-    }
-
-    @Override
-    public Config getConfig() {
-      return config;
-    }
-
-    @Override
-    public int getQueryTimeout() {
-      return config.getQueryTimeout();
-    }
-
-    @Override
-    public String comment(String sql) {
-      return sql;
-    }
-
-    @Override
-    public void prepare() {}
-
-    @Override
-    public void complete() {}
   }
 }

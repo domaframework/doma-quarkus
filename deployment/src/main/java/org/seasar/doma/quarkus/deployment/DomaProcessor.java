@@ -1,12 +1,16 @@
 package org.seasar.doma.quarkus.deployment;
 
 import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
+import static java.util.stream.Collectors.toList;
 
+import io.quarkus.agroal.DataSource;
 import io.quarkus.agroal.deployment.JdbcDataSourceBuildItem;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
 import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
+import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
+import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
@@ -17,11 +21,20 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Default;
 import org.jboss.jandex.DotName;
 import org.seasar.doma.DaoImplementation;
+import org.seasar.doma.jdbc.Config;
+import org.seasar.doma.jdbc.criteria.Entityql;
+import org.seasar.doma.jdbc.criteria.NativeSql;
+import org.seasar.doma.quarkus.runtime.DomaConfig;
 import org.seasar.doma.quarkus.runtime.DomaProducer;
 import org.seasar.doma.quarkus.runtime.DomaRecorder;
+import org.seasar.doma.quarkus.runtime.DomaSettings;
 import org.seasar.doma.quarkus.runtime.JtaRequiresNewController;
 import org.seasar.doma.quarkus.runtime.ScriptExecutor;
 import org.seasar.doma.quarkus.runtime.UnsupportedTransactionManager;
@@ -38,7 +51,10 @@ class DomaProcessor {
   @BuildStep
   AdditionalBeanBuildItem additionalBeans() {
     return new AdditionalBeanBuildItem(
-        DomaProducer.class, JtaRequiresNewController.class, UnsupportedTransactionManager.class);
+        DomaProducer.class,
+        JtaRequiresNewController.class,
+        ScriptExecutor.class,
+        UnsupportedTransactionManager.class);
   }
 
   @BuildStep
@@ -59,22 +75,21 @@ class DomaProcessor {
   }
 
   @BuildStep
-  Optional<HotDeploymentWatchedFileBuildItem> hotDeploymentWatchedFile(
-      DomaSettingsBuildItem settings) {
-    var sqlLoadScript = settings.getSettings().sqlLoadScript;
-    if (sqlLoadScript == null) {
-      return Optional.empty();
-    }
-    return Optional.of(new HotDeploymentWatchedFileBuildItem(sqlLoadScript));
+  List<HotDeploymentWatchedFileBuildItem> hotDeploymentWatchedFile(DomaSettingsBuildItem settings) {
+    return settings.getSettings().dataSources.stream()
+        .map(it -> it.sqlLoadScript)
+        .filter(Objects::nonNull)
+        .map(HotDeploymentWatchedFileBuildItem::new)
+        .collect(toList());
   }
 
   @BuildStep
   NativeImageResourceBuildItem nativeImageResources(DomaSettingsBuildItem settings) {
     List<String> resources = new ArrayList<>();
-    var sqlLoadScript = settings.getSettings().sqlLoadScript;
-    if (sqlLoadScript != null) {
-      resources.add(sqlLoadScript);
-    }
+    settings.getSettings().dataSources.stream()
+        .map(it -> it.sqlLoadScript)
+        .filter(Objects::nonNull)
+        .forEach(resources::add);
     var scanner = new DomaResourceScanner();
     var scannedResources = scanner.scan();
     resources.addAll(scannedResources);
@@ -94,9 +109,67 @@ class DomaProcessor {
 
   @BuildStep
   @Record(STATIC_INIT)
-  BeanContainerListenerBuildItem beanContainerListener(
-      DomaRecorder recorder, DomaSettingsBuildItem settings, LaunchModeBuildItem launchMode) {
-    return new BeanContainerListenerBuildItem(
-        recorder.configure(settings.getSettings(), launchMode.getLaunchMode()));
+  void registerBeans(
+      DomaRecorder recorder,
+      LaunchModeBuildItem launchMode,
+      DomaSettingsBuildItem settings,
+      BuildProducer<BeanContainerListenerBuildItem> beanContainerListeners,
+      BuildProducer<SyntheticBeanBuildItem> syntheticBeans) {
+
+    var domaSettings = settings.getSettings();
+
+    beanContainerListeners.produce(
+        new BeanContainerListenerBuildItem(
+            recorder.configure(domaSettings, launchMode.getLaunchMode())));
+
+    registerSyntheticBeans(
+        domaSettings.dataSources,
+        syntheticBeans,
+        DomaConfig.class,
+        Config.class,
+        recorder::configureConfig);
+
+    registerSyntheticBeans(
+        domaSettings.dataSources,
+        syntheticBeans,
+        Entityql.class,
+        Entityql.class,
+        recorder::configureEntityql);
+
+    registerSyntheticBeans(
+        domaSettings.dataSources,
+        syntheticBeans,
+        NativeSql.class,
+        NativeSql.class,
+        recorder::configureNativeSql);
+  }
+
+  private <BEAN> void registerSyntheticBeans(
+      List<DomaSettings.DataSourceSettings> dataSourceSettingsList,
+      BuildProducer<SyntheticBeanBuildItem> syntheticBeans,
+      Class<?> implClazz,
+      Class<BEAN> typeClazz,
+      Function<DomaSettings.DataSourceSettings, Supplier<BEAN>> supplierCreator) {
+    dataSourceSettingsList.stream()
+        .map(
+            dataSourceSettings -> {
+              var configurator =
+                  SyntheticBeanBuildItem.configure(implClazz)
+                      .addType(DotName.createSimple(typeClazz.getName()))
+                      .scope(Dependent.class)
+                      .unremovable()
+                      .supplier(supplierCreator.apply(dataSourceSettings));
+              if (dataSourceSettings.isDefault) {
+                configurator.addQualifier().annotation(Default.class).done();
+              } else {
+                configurator
+                    .addQualifier()
+                    .annotation(DataSource.class)
+                    .addValue("value", dataSourceSettings.name)
+                    .done();
+              }
+              return configurator.done();
+            })
+        .forEach(syntheticBeans::produce);
   }
 }

@@ -1,5 +1,10 @@
 package org.seasar.doma.quarkus.runtime;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import org.seasar.doma.jdbc.GreedyCacheSqlFileRepository;
 import org.seasar.doma.jdbc.Naming;
@@ -15,17 +20,52 @@ import org.seasar.doma.jdbc.dialect.StandardDialect;
 
 public class DomaSettings {
 
-  public DialectType dialect;
   public SqlFileRepositoryType sqlFileRepository;
   public NamingType naming;
   public SqlLogType exceptionSqlLogType;
-  public String dataSourceName;
-  public int batchSize;
-  public int fetchSize;
-  public int maxRows;
-  public int queryTimeout;
-  public String sqlLoadScript;
+  public List<DataSourceSettings> dataSources;
   public LogSettings log;
+
+  public Map<String, String> asNamedSqlLoadScripts() {
+    return dataSources.stream()
+        .filter(it -> it.sqlLoadScript != null)
+        .collect(toMap(it -> it.name, it -> it.sqlLoadScript, (a, b) -> a, LinkedHashMap::new));
+  }
+
+  public static class DataSourceSettings {
+    public String name;
+    public boolean isDefault;
+    public DialectType dialect;
+    public int batchSize;
+    public int fetchSize;
+    public int maxRows;
+    public int queryTimeout;
+    public String sqlLoadScript;
+
+    @Override
+    public String toString() {
+      return "DataSourceSettings{"
+          + "name='"
+          + name
+          + '\''
+          + ", isDefault="
+          + isDefault
+          + ", dialect="
+          + dialect
+          + ", batchSize="
+          + batchSize
+          + ", fetchSize="
+          + fetchSize
+          + ", maxRows="
+          + maxRows
+          + ", queryTimeout="
+          + queryTimeout
+          + ", sqlLoadScript='"
+          + sqlLoadScript
+          + '\''
+          + '}';
+    }
+  }
 
   public static class LogSettings {
     public boolean sql;
@@ -111,28 +151,14 @@ public class DomaSettings {
   @Override
   public String toString() {
     return "DomaSettings{"
-        + "dialect="
-        + dialect
-        + ", sqlFileRepository="
+        + "sqlFileRepository="
         + sqlFileRepository
         + ", naming="
         + naming
         + ", exceptionSqlLogType="
         + exceptionSqlLogType
-        + ", dataSourceName='"
-        + dataSourceName
-        + '\''
-        + ", batchSize="
-        + batchSize
-        + ", fetchSize="
-        + fetchSize
-        + ", maxRows="
-        + maxRows
-        + ", queryTimeout="
-        + queryTimeout
-        + ", sqlLoadScript='"
-        + sqlLoadScript
-        + '\''
+        + ", dataSources="
+        + dataSources
         + ", log="
         + log
         + '}';

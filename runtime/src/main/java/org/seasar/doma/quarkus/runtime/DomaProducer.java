@@ -1,19 +1,16 @@
 package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.arc.DefaultBean;
-import io.quarkus.datasource.common.runtime.DataSourceUtil;
-import io.quarkus.runtime.Startup;
+import io.quarkus.arc.Unremovable;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.Instance;
+import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
 import org.seasar.doma.jdbc.ClassHelper;
 import org.seasar.doma.jdbc.CommandImplementors;
 import org.seasar.doma.jdbc.Commenter;
-import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.jdbc.ConfigSupport;
 import org.seasar.doma.jdbc.EntityListenerProvider;
 import org.seasar.doma.jdbc.JdbcLogger;
@@ -25,9 +22,6 @@ import org.seasar.doma.jdbc.ScriptFileLoader;
 import org.seasar.doma.jdbc.SqlFileRepository;
 import org.seasar.doma.jdbc.SqlLogType;
 import org.seasar.doma.jdbc.UnknownColumnHandler;
-import org.seasar.doma.jdbc.criteria.Entityql;
-import org.seasar.doma.jdbc.criteria.NativeSql;
-import org.seasar.doma.jdbc.dialect.Dialect;
 import org.seasar.doma.jdbc.tx.TransactionManager;
 
 @Singleton
@@ -35,15 +29,9 @@ public class DomaProducer {
 
   private volatile SqlFileRepository sqlFileRepository;
   private volatile ScriptFileLoader scriptFileLoader;
-  private volatile Dialect dialect;
   private volatile Naming naming;
   private volatile SqlLogType exceptionSqlLogType;
-  private volatile String dataSourceName;
-  private volatile int batchSize;
-  private volatile int fetchSize;
-  private volatile int maxRows;
-  private volatile int queryTimeout;
-  private volatile String sqlLoadScript;
+  private volatile Map<String, String> namedSqlLoadScripts;
   private volatile LogPreferences logPreferences;
 
   public void setSqlFileRepository(SqlFileRepository sqlFileRepository) {
@@ -54,10 +42,6 @@ public class DomaProducer {
     this.scriptFileLoader = Objects.requireNonNull(scriptFileLoader);
   }
 
-  public void setDialect(Dialect dialect) {
-    this.dialect = Objects.requireNonNull(dialect);
-  }
-
   public void setNaming(Naming naming) {
     this.naming = Objects.requireNonNull(naming);
   }
@@ -66,38 +50,13 @@ public class DomaProducer {
     this.exceptionSqlLogType = Objects.requireNonNull(exceptionSqlLogType);
   }
 
-  public void setDataSourceName(String dataSourceName) {
-    this.dataSourceName = Objects.requireNonNull(dataSourceName);
-  }
-
-  public void setBatchSize(int batchSize) {
-    this.batchSize = batchSize;
-  }
-
-  public void setFetchSize(int fetchSize) {
-    this.fetchSize = fetchSize;
-  }
-
-  public void setMaxRows(int maxRows) {
-    this.maxRows = maxRows;
-  }
-
-  public void setQueryTimeout(int queryTimeout) {
-    this.queryTimeout = queryTimeout;
-  }
-
-  public void setSqlLoadScript(String sqlLoadScript) {
-    this.sqlLoadScript = sqlLoadScript;
+  public void setNamedSqlLoadScripts(Map<String, String> namedSqlLoadScripts) {
+    Objects.requireNonNull(namedSqlLoadScripts);
+    this.namedSqlLoadScripts = Collections.unmodifiableMap(namedSqlLoadScripts);
   }
 
   public void setLogPreferences(LogPreferences logPreferences) {
     this.logPreferences = Objects.requireNonNull(logPreferences);
-  }
-
-  @ApplicationScoped
-  @DefaultBean
-  Dialect dialect() {
-    return Objects.requireNonNull(dialect);
   }
 
   @ApplicationScoped
@@ -173,6 +132,12 @@ public class DomaProducer {
   }
 
   @Singleton
+  @Named("doma.namedSqlLoadScripts")
+  public Map<String, String> getNamedSqlLoadScripts() {
+    return namedSqlLoadScripts;
+  }
+
+  @Singleton
   @DefaultBean
   LogPreferences logPreferences() {
     return Objects.requireNonNull(logPreferences);
@@ -180,9 +145,8 @@ public class DomaProducer {
 
   @ApplicationScoped
   @DefaultBean
-  DomaConfig config(
-      @Any Instance<DataSource> dataSourceInstance,
-      Dialect dialect,
+  @Unremovable
+  DomaConfig.Core core(
       SqlFileRepository sqlFileRepository,
       ScriptFileLoader scriptFileLoader,
       JdbcLogger jdbcLogger,
@@ -197,11 +161,7 @@ public class DomaProducer {
       Commenter commenter,
       EntityListenerProvider entityListenerProvider,
       TransactionManager transactionManager) {
-    Objects.requireNonNull(dataSourceName);
-    var dataSource = selectDataSource(dataSourceInstance, dataSourceName);
-    return new DomaConfig(
-        dataSource,
-        dialect,
+    return new DomaConfig.Core(
         sqlFileRepository,
         scriptFileLoader,
         jdbcLogger,
@@ -215,39 +175,6 @@ public class DomaProducer {
         mapKeyNaming,
         commenter,
         entityListenerProvider,
-        transactionManager,
-        dataSourceName,
-        batchSize,
-        fetchSize,
-        maxRows,
-        queryTimeout);
-  }
-
-  private DataSource selectDataSource(Instance<DataSource> instance, String name) {
-    if (DataSourceUtil.isDefault(name)) {
-      return instance.select(Default.Literal.INSTANCE).get();
-    }
-    io.quarkus.agroal.DataSource qualifier =
-        new io.quarkus.agroal.DataSource.DataSourceLiteral(name);
-    return instance.select(qualifier).get();
-  }
-
-  @ApplicationScoped
-  @DefaultBean
-  Entityql entityql(Config config) {
-    return new Entityql(config);
-  }
-
-  @ApplicationScoped
-  @DefaultBean
-  NativeSql nativeSql(Config config) {
-    return new NativeSql(config);
-  }
-
-  @Startup
-  @ApplicationScoped
-  @DefaultBean
-  ScriptExecutor scriptExecutor(Config config) {
-    return new ScriptExecutor(config, sqlLoadScript);
+        transactionManager);
   }
 }

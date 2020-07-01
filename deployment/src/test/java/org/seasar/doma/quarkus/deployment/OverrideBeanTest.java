@@ -3,6 +3,7 @@ package org.seasar.doma.quarkus.deployment;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.quarkus.arc.Unremovable;
 import io.quarkus.test.QuarkusUnitTest;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -56,7 +57,10 @@ public class OverrideBeanTest {
     }
   }
 
+  // @Inject MyCommenter c;
+
   @ApplicationScoped
+  @Unremovable
   static class MyCommenter implements Commenter {
     @Override
     public String comment(String sql, CommentContext context) {
@@ -66,7 +70,10 @@ public class OverrideBeanTest {
 
   @Test
   void test() {
-    assertTrue(config.getSqlFileRepository().toString().contains("NoCacheSqlFileRepository"));
+    //
+    // CDI.current().getBeanManager().createInstance().select(Commenter.class).iterator().forEachRemaining(System.out::println);
+    // System.out.println(c2);
+    //    assertTrue(config.getSqlFileRepository().toString().contains("NoCacheSqlFileRepository"));
     assertTrue(config.getCommenter() instanceof MyCommenter);
     assertNotNull(config.getTransactionManager());
   }

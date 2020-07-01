@@ -7,9 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.seasar.doma.jdbc.ScriptFileLoader;
-import org.seasar.doma.jdbc.SqlFileRepository;
-import org.seasar.doma.jdbc.dialect.Dialect;
+import org.seasar.doma.jdbc.Config;
 
 @Path("/hot")
 public class HotReplacementResource {
@@ -20,16 +18,14 @@ public class HotReplacementResource {
   public static final String SCRIPT_FILE =
       "META-INF/org/seasar/doma/quarkus/deployment/model/MyEntityDao/create.script";
 
-  @Inject Dialect dialect;
-  @Inject SqlFileRepository sqlFileRepository;
-  @Inject ScriptFileLoader scriptFileLoader;
+  @Inject Config config;
 
   @GET
   @Path("/sql")
   @Produces(MediaType.TEXT_PLAIN)
   public String sql() throws Exception {
     var method = getClass().getMethod("sql");
-    var sqlFile = sqlFileRepository.getSqlFile(method, SQL_FILE, dialect);
+    var sqlFile = config.getSqlFileRepository().getSqlFile(method, SQL_FILE, config.getDialect());
     return sqlFile.getSql();
   }
 
@@ -37,7 +33,7 @@ public class HotReplacementResource {
   @Path("/script")
   @Produces(MediaType.TEXT_PLAIN)
   public String script() throws Exception {
-    var url = scriptFileLoader.loadAsURL(SCRIPT_FILE);
+    var url = config.getScriptFileLoader().loadAsURL(SCRIPT_FILE);
     return Files.readString(Paths.get(url.toURI()));
   }
 }

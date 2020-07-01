@@ -1,7 +1,6 @@
 package org.seasar.doma.quarkus.deployment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.agroal.api.AgroalDataSource;
@@ -14,8 +13,11 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.seasar.doma.jdbc.Config;
+import org.seasar.doma.jdbc.criteria.Entityql;
+import org.seasar.doma.jdbc.criteria.NativeSql;
+import org.seasar.doma.quarkus.runtime.DomaConfig;
 
-public class DataSourceNameTest {
+public class QualifierTest {
 
   @RegisterExtension
   static QuarkusUnitTest runner =
@@ -32,22 +34,48 @@ public class DataSourceNameTest {
                                   + "quarkus.datasource.inventory.db-kind=h2\n"
                                   + "quarkus.datasource.inventory.username=USERNAME-NAMED\n"
                                   + "quarkus.datasource.inventory.jdbc.url=jdbc:h2:tcp://localhost/mem:testing\n"
-                                  + "quarkus.datasource.inventory.jdbc.driver=org.h2.Driver\n"
-                                  + "quarkus.doma.datasource-name=inventory\n"),
+                                  + "quarkus.datasource.inventory.jdbc.driver=org.h2.Driver\n"),
                           "application.properties"));
 
-  @Inject Config config;
+  @Inject DomaConfig config;
 
-  @Inject AgroalDataSource defaultDataSource;
+  @Inject
+  @DataSource("inventory")
+  Config inventoryConfig;
+
+  @Inject AgroalDataSource dataSource;
 
   @Inject
   @DataSource("inventory")
   AgroalDataSource inventoryDataSource;
 
+  @Inject Entityql entityql;
+
+  @Inject
+  @DataSource("inventory")
+  Entityql inventoryEntityql;
+
+  @Inject NativeSql nativeSql;
+
+  @Inject
+  @DataSource("inventory")
+  NativeSql inventoryNativeSql;
+
   @Test
-  void test() {
-    assertNotNull(config.getDataSource());
-    assertNotEquals(config.getDataSource(), defaultDataSource);
-    assertEquals(config.getDataSource(), inventoryDataSource);
+  void testDataSource() throws Exception {
+    assertEquals(dataSource, config.getDataSource());
+    assertEquals(inventoryDataSource, inventoryConfig.getDataSource());
+  }
+
+  @Test
+  void testEntityql() throws Exception {
+    assertNotNull(entityql);
+    assertNotNull(inventoryEntityql);
+  }
+
+  @Test
+  void testNativeSql() throws Exception {
+    assertNotNull(nativeSql);
+    assertNotNull(inventoryNativeSql);
   }
 }

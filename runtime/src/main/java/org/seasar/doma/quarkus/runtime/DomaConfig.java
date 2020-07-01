@@ -198,6 +198,7 @@ public class DomaConfig implements Config {
   }
 
   public static Builder builder(Config config) {
+    Objects.requireNonNull(config);
     var builder = new Builder();
     builder.setDataSource(config.getDataSource());
     builder.setDialect(config.getDialect());
@@ -221,6 +222,130 @@ public class DomaConfig implements Config {
     builder.setMaxRows(config.getMaxRows());
     builder.setQueryTimeout(config.getQueryTimeout());
     return builder;
+  }
+
+  public static Builder builder(Core core) {
+    Objects.requireNonNull(core);
+    var builder = new Builder();
+    builder.setSqlFileRepository(core.getSqlFileRepository());
+    builder.setScriptFileLoader(core.getScriptFileLoader());
+    builder.setJdbcLogger(core.getJdbcLogger());
+    builder.setRequiresNewController(core.getRequiresNewController());
+    builder.setClassHelper(core.getClassHelper());
+    builder.setCommandImplementors(core.getCommandImplementors());
+    builder.setQueryImplementors(core.getQueryImplementors());
+    builder.setExceptionSqlLogType(core.getExceptionSqlLogType());
+    builder.setUnknownColumnHandler(core.getUnknownColumnHandler());
+    builder.setNaming(core.getNaming());
+    builder.setMapKeyNaming(core.getMapKeyNaming());
+    builder.setCommenter(core.getCommenter());
+    builder.setEntityListenerProvider(core.getEntityListenerProvider());
+    builder.setTransactionManager(core.getTransactionManager());
+    return builder;
+  }
+
+  public static class Core {
+    private final SqlFileRepository sqlFileRepository;
+    private final ScriptFileLoader scriptFileLoader;
+    private final JdbcLogger jdbcLogger;
+    private final RequiresNewController requiresNewController;
+    private final ClassHelper classHelper;
+    private final CommandImplementors commandImplementors;
+    private final QueryImplementors queryImplementors;
+    private final SqlLogType exceptionSqlLogType;
+    private final UnknownColumnHandler unknownColumnHandler;
+    private final Naming naming;
+    private final MapKeyNaming mapKeyNaming;
+    private final Commenter commenter;
+    private final EntityListenerProvider entityListenerProvider;
+    private final TransactionManager transactionManager;
+
+    public Core(
+        SqlFileRepository sqlFileRepository,
+        ScriptFileLoader scriptFileLoader,
+        JdbcLogger jdbcLogger,
+        RequiresNewController requiresNewController,
+        ClassHelper classHelper,
+        CommandImplementors commandImplementors,
+        QueryImplementors queryImplementors,
+        SqlLogType exceptionSqlLogType,
+        UnknownColumnHandler unknownColumnHandler,
+        Naming naming,
+        MapKeyNaming mapKeyNaming,
+        Commenter commenter,
+        EntityListenerProvider entityListenerProvider,
+        TransactionManager transactionManager) {
+      this.sqlFileRepository = Objects.requireNonNull(sqlFileRepository);
+      this.scriptFileLoader = Objects.requireNonNull(scriptFileLoader);
+      this.jdbcLogger = Objects.requireNonNull(jdbcLogger);
+      this.requiresNewController = Objects.requireNonNull(requiresNewController);
+      this.classHelper = Objects.requireNonNull(classHelper);
+      this.commandImplementors = Objects.requireNonNull(commandImplementors);
+      this.queryImplementors = Objects.requireNonNull(queryImplementors);
+      this.exceptionSqlLogType = Objects.requireNonNull(exceptionSqlLogType);
+      this.unknownColumnHandler = Objects.requireNonNull(unknownColumnHandler);
+      this.naming = Objects.requireNonNull(naming);
+      this.mapKeyNaming = Objects.requireNonNull(mapKeyNaming);
+      this.commenter = Objects.requireNonNull(commenter);
+      this.entityListenerProvider = Objects.requireNonNull(entityListenerProvider);
+      this.transactionManager = Objects.requireNonNull(transactionManager);
+    }
+
+    public SqlFileRepository getSqlFileRepository() {
+      return sqlFileRepository;
+    }
+
+    public ScriptFileLoader getScriptFileLoader() {
+      return scriptFileLoader;
+    }
+
+    public JdbcLogger getJdbcLogger() {
+      return jdbcLogger;
+    }
+
+    public RequiresNewController getRequiresNewController() {
+      return requiresNewController;
+    }
+
+    public ClassHelper getClassHelper() {
+      return classHelper;
+    }
+
+    public CommandImplementors getCommandImplementors() {
+      return commandImplementors;
+    }
+
+    public QueryImplementors getQueryImplementors() {
+      return queryImplementors;
+    }
+
+    public SqlLogType getExceptionSqlLogType() {
+      return exceptionSqlLogType;
+    }
+
+    public UnknownColumnHandler getUnknownColumnHandler() {
+      return unknownColumnHandler;
+    }
+
+    public Naming getNaming() {
+      return naming;
+    }
+
+    public MapKeyNaming getMapKeyNaming() {
+      return mapKeyNaming;
+    }
+
+    public Commenter getCommenter() {
+      return commenter;
+    }
+
+    public EntityListenerProvider getEntityListenerProvider() {
+      return entityListenerProvider;
+    }
+
+    public TransactionManager getTransactionManager() {
+      return transactionManager;
+    }
   }
 
   public static class Builder {
