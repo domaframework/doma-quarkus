@@ -6,19 +6,19 @@ import io.quarkus.runtime.StartupEvent;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 import org.jboss.logging.Logger;
 import org.seasar.doma.internal.util.ResourceUtil;
 
-@ApplicationScoped
+@Singleton
 @DefaultBean
 public class ScriptExecutor {
 
-  private static Logger LOGGER = Logger.getLogger(ScriptExecutor.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(ScriptExecutor.class.getName());
 
   private final Map<String, String> namedSqlLoadScripts;
 

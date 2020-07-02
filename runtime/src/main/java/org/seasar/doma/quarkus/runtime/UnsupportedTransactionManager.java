@@ -2,11 +2,11 @@ package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.arc.DefaultBean;
 import java.util.function.Supplier;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import org.seasar.doma.jdbc.tx.TransactionIsolationLevel;
 import org.seasar.doma.jdbc.tx.TransactionManager;
 
-@ApplicationScoped
+@Singleton
 @DefaultBean
 public class UnsupportedTransactionManager implements TransactionManager {
 

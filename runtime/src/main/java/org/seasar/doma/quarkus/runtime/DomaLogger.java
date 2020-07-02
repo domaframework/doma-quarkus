@@ -12,10 +12,6 @@ public class DomaLogger extends AbstractJdbcLogger<Logger.Level> {
 
   private final LogPreferences logPreferences;
 
-  DomaLogger() {
-    this(new LogPreferences());
-  }
-
   public DomaLogger(LogPreferences logPreferences) {
     super(Logger.Level.DEBUG);
     this.logPreferences = Objects.requireNonNull(logPreferences);

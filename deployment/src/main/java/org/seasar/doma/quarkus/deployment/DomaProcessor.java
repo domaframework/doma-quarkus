@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Default;
+import javax.inject.Singleton;
 import org.jboss.jandex.DotName;
 import org.seasar.doma.DaoImplementation;
 import org.seasar.doma.jdbc.Config;
@@ -147,7 +147,7 @@ class DomaProcessor {
   private <BEAN> void registerSyntheticBeans(
       List<DomaSettings.DataSourceSettings> dataSourceSettingsList,
       BuildProducer<SyntheticBeanBuildItem> syntheticBeans,
-      Class<?> implClazz,
+      Class<? extends BEAN> implClazz,
       Class<BEAN> typeClazz,
       Function<DomaSettings.DataSourceSettings, Supplier<BEAN>> supplierCreator) {
     dataSourceSettingsList.stream()
@@ -156,7 +156,7 @@ class DomaProcessor {
               var configurator =
                   SyntheticBeanBuildItem.configure(implClazz)
                       .addType(DotName.createSimple(typeClazz.getName()))
-                      .scope(Dependent.class)
+                      .scope(Singleton.class)
                       .unremovable()
                       .supplier(supplierCreator.apply(dataSourceSettings));
               if (dataSourceSettings.isDefault) {

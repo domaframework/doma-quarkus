@@ -5,7 +5,6 @@ import io.quarkus.arc.Unremovable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import org.seasar.doma.jdbc.ClassHelper;
@@ -59,43 +58,43 @@ public class DomaProducer {
     this.logPreferences = Objects.requireNonNull(logPreferences);
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   SqlFileRepository sqlFileRepository() {
     return Objects.requireNonNull(sqlFileRepository);
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   ScriptFileLoader scriptFileLoader() {
     return Objects.requireNonNull(scriptFileLoader);
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   DomaLogger jdbcLogger(LogPreferences logPreferences) {
     return new DomaLogger(logPreferences);
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   ClassHelper classHelper() {
     return ConfigSupport.defaultClassHelper;
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   CommandImplementors commandImplementors() {
     return ConfigSupport.defaultCommandImplementors;
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   QueryImplementors queryImplementors() {
     return ConfigSupport.defaultQueryImplementors;
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   UnknownColumnHandler unknownColumnHandler() {
     return ConfigSupport.defaultUnknownColumnHandler;
@@ -107,26 +106,26 @@ public class DomaProducer {
     return Objects.requireNonNull(naming);
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   MapKeyNaming mapKeyNaming() {
     return ConfigSupport.defaultMapKeyNaming;
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   Commenter commenter() {
     return ConfigSupport.defaultCommenter;
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   EntityListenerProvider entityListenerProvider() {
     return ConfigSupport.defaultEntityListenerProvider;
   }
 
   @Singleton
-  @DefaultBean
+  @Named("doma.exceptionSqlLogType")
   SqlLogType exceptionSqlLogType() {
     return Objects.requireNonNull(exceptionSqlLogType);
   }
@@ -138,12 +137,11 @@ public class DomaProducer {
   }
 
   @Singleton
-  @DefaultBean
   LogPreferences logPreferences() {
     return Objects.requireNonNull(logPreferences);
   }
 
-  @ApplicationScoped
+  @Singleton
   @DefaultBean
   @Unremovable
   DomaConfig.Core core(
@@ -154,7 +152,7 @@ public class DomaProducer {
       ClassHelper classHelper,
       CommandImplementors commandImplementors,
       QueryImplementors queryImplementors,
-      SqlLogType exceptionSqlLogType,
+      @Named("doma.exceptionSqlLogType") SqlLogType exceptionSqlLogType,
       UnknownColumnHandler unknownColumnHandler,
       Naming naming,
       MapKeyNaming mapKeyNaming,

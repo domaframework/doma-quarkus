@@ -1,11 +1,11 @@
 package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.arc.DefaultBean;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import org.seasar.doma.jdbc.RequiresNewController;
 
-@ApplicationScoped
+@Singleton
 @DefaultBean
 public class JtaRequiresNewController implements RequiresNewController {
   @Override
