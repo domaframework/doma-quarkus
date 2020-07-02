@@ -11,11 +11,14 @@ import org.seasar.doma.jdbc.Naming;
 import org.seasar.doma.jdbc.NoCacheSqlFileRepository;
 import org.seasar.doma.jdbc.SqlFileRepository;
 import org.seasar.doma.jdbc.SqlLogType;
+import org.seasar.doma.jdbc.dialect.Db2Dialect;
 import org.seasar.doma.jdbc.dialect.Dialect;
 import org.seasar.doma.jdbc.dialect.H2Dialect;
 import org.seasar.doma.jdbc.dialect.MssqlDialect;
 import org.seasar.doma.jdbc.dialect.MysqlDialect;
+import org.seasar.doma.jdbc.dialect.OracleDialect;
 import org.seasar.doma.jdbc.dialect.PostgresDialect;
+import org.seasar.doma.jdbc.dialect.SqliteDialect;
 import org.seasar.doma.jdbc.dialect.StandardDialect;
 
 public class DomaSettings {
@@ -98,11 +101,14 @@ public class DomaSettings {
   }
 
   public enum DialectType {
-    STANDARD(StandardDialect::new),
+    DB2(Db2Dialect::new),
+    H2(H2Dialect::new),
     MSSQL(MssqlDialect::new),
     MYSQL(MysqlDialect::new),
+    ORACLE(OracleDialect::new),
     POSTGRES(PostgresDialect::new),
-    H2(H2Dialect::new);
+    STANDARD(StandardDialect::new),
+    SQLITE(SqliteDialect::new);
 
     private final Supplier<Dialect> constructor;
 
