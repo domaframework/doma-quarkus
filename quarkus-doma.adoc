@@ -13,44 +13,8 @@ a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.dialect]]`lin
 [.description]
 --
 The SQL dialect.
---|`standard`, `mssql`, `mysql`, `postgres`, `h2`
+--|`db2`, `h2`, `mssql`, `mysql`, `oracle`, `postgres`, `standard`, `sqlite`
 |`depends on 'quarkus.datasource.db-kind'`
-
-
-a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.sql-file-repository]]`link:#quarkus-doma_quarkus.doma.sql-file-repository[quarkus.doma.sql-file-repository]`
-
-[.description]
---
-The SQL file repository.
---|`no-cache`, `greedy-cache`
-|`greedy-cache`
-
-
-a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.naming]]`link:#quarkus-doma_quarkus.doma.naming[quarkus.doma.naming]`
-
-[.description]
---
-The naming convention controller.
---|`none`, `lower-case`, `upper-case`, `snake-lower-case`, `snake-upper-case`
-|`none`
-
-
-a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.exception-sql-log-type]]`link:#quarkus-doma_quarkus.doma.exception-sql-log-type[quarkus.doma.exception-sql-log-type]`
-
-[.description]
---
-The SQL log type that determines the SQL log format in exceptions.
---|`raw`, `formatted`, `none`
-|`none`
-
-
-a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.datasource-name]]`link:#quarkus-doma_quarkus.doma.datasource-name[quarkus.doma.datasource-name]`
-
-[.description]
---
-The name of the data source.
---|string
-|`depends on 'quarkus.datasource."datasource-name".db-kind'`
 
 
 a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.batch-size]]`link:#quarkus-doma_quarkus.doma.batch-size[quarkus.doma.batch-size]`
@@ -99,6 +63,33 @@ Name of the file containing the SQL statements to execute when Doma starts. Its 
 |`import.sql in DEV, TEST ; no-file otherwise`
 
 
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.sql-file-repository]]`link:#quarkus-doma_quarkus.doma.sql-file-repository[quarkus.doma.sql-file-repository]`
+
+[.description]
+--
+The SQL file repository.
+--|`no-cache`, `greedy-cache`
+|`greedy-cache`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.naming]]`link:#quarkus-doma_quarkus.doma.naming[quarkus.doma.naming]`
+
+[.description]
+--
+The naming convention controller.
+--|`none`, `lower-case`, `upper-case`, `snake-lower-case`, `snake-upper-case`
+|`none`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.exception-sql-log-type]]`link:#quarkus-doma_quarkus.doma.exception-sql-log-type[quarkus.doma.exception-sql-log-type]`
+
+[.description]
+--
+The SQL log type that determines the SQL log format in exceptions.
+--|`raw`, `formatted`, `none`
+|`none`
+
+
 a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.log.sql]]`link:#quarkus-doma_quarkus.doma.log.sql[quarkus.doma.log.sql]`
 
 [.description]
@@ -124,5 +115,65 @@ a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.log.closing-f
 Shows the logs of the failure to close JDBC resource.
 --|boolean
 |`false`
+
+
+h|[[quarkus-doma_quarkus.doma.named-data-sources]]link:#quarkus-doma_quarkus.doma.named-data-sources[Additional named datasources]
+
+h|Type
+h|Default
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.-datasource-name-.dialect]]`link:#quarkus-doma_quarkus.doma.-datasource-name-.dialect[quarkus.doma."datasource-name".dialect]`
+
+[.description]
+--
+The SQL dialect.
+--|`db2`, `h2`, `mssql`, `mysql`, `oracle`, `postgres`, `standard`, `sqlite`
+|`depends on 'quarkus.datasource.db-kind'`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.-datasource-name-.batch-size]]`link:#quarkus-doma_quarkus.doma.-datasource-name-.batch-size[quarkus.doma."datasource-name".batch-size]`
+
+[.description]
+--
+The batch size.
+--|int
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.-datasource-name-.fetch-size]]`link:#quarkus-doma_quarkus.doma.-datasource-name-.fetch-size[quarkus.doma."datasource-name".fetch-size]`
+
+[.description]
+--
+The fetch size.
+--|int
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.-datasource-name-.max-rows]]`link:#quarkus-doma_quarkus.doma.-datasource-name-.max-rows[quarkus.doma."datasource-name".max-rows]`
+
+[.description]
+--
+The max rows.
+--|int
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.-datasource-name-.query-timeout]]`link:#quarkus-doma_quarkus.doma.-datasource-name-.query-timeout[quarkus.doma."datasource-name".query-timeout]`
+
+[.description]
+--
+The query timeout limit in seconds.
+--|int
+|`0`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-doma_quarkus.doma.-datasource-name-.sql-load-script]]`link:#quarkus-doma_quarkus.doma.-datasource-name-.sql-load-script[quarkus.doma."datasource-name".sql-load-script]`
+
+[.description]
+--
+Name of the file containing the SQL statements to execute when Doma starts. Its default value differs depending on the Quarkus launch mode:
+* In dev and test modes, it defaults to `import.sql`. Simply add an `import.sql` file in the root of your resources directory and it will be picked up without having to set this property. Pass `no-file` to force Doma to ignore the SQL import file. * In production mode, it defaults to `no-file`. It means Doma won't try to execute any SQL import file by default. Pass an explicit value to force Doma to execute the SQL import file.
+--|string
+|`import.sql in DEV, TEST ; no-file otherwise`
 
 |===
