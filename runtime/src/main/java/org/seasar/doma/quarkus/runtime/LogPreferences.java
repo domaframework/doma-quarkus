@@ -6,10 +6,6 @@ public class LogPreferences {
   private final boolean dao;
   private final boolean closingFailure;
 
-  public LogPreferences() {
-    this(false, false, false);
-  }
-
   public LogPreferences(boolean sql, boolean dao, boolean closingFailure) {
     this.sql = sql;
     this.dao = dao;

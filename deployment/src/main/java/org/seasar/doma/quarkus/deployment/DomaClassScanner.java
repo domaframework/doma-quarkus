@@ -19,7 +19,7 @@ import org.seasar.doma.EntityTypeImplementation;
 
 public class DomaClassScanner {
 
-  private static final Logger LOGGER = Logger.getLogger(DomaClassScanner.class);
+  private static final Logger logger = Logger.getLogger(DomaClassScanner.class);
 
   private static final DotName ENTITY = DotName.createSimple(Entity.class.getName());
   private static final DotName EMBEDDABLE = DotName.createSimple(Embeddable.class.getName());
@@ -48,7 +48,7 @@ public class DomaClassScanner {
         .map(AnnotationTarget::asClass)
         .map(ClassInfo::name)
         .map(DotName::toString)
-        .peek(it -> LOGGER.debugf("class found: %s", it))
+        .peek(it -> logger.debugf("class found: %s", it))
         .collect(toList());
   }
 }

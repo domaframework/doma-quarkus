@@ -8,6 +8,7 @@ import org.seasar.doma.jdbc.RequiresNewController;
 @Singleton
 @DefaultBean
 public class JtaRequiresNewController implements RequiresNewController {
+
   @Override
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public <R> R requiresNew(Callback<R> callback) throws Throwable {

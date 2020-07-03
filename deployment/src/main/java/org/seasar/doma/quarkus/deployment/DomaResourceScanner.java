@@ -17,7 +17,8 @@ import org.jboss.logging.Logger;
 
 public class DomaResourceScanner {
 
-  private static final Logger LOGGER = Logger.getLogger(DomaResourceScanner.class);
+  private static final Logger logger = Logger.getLogger(DomaResourceScanner.class);
+
   private static final String META_INF = "META-INF";
 
   List<String> scan() {
@@ -39,7 +40,7 @@ public class DomaResourceScanner {
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
               var fileName = resource.relativize(file).toString();
               if (fileName.endsWith(".sql") || fileName.endsWith(".script")) {
-                LOGGER.debugf("resource found: %s", fileName);
+                logger.debugf("resource found: %s", fileName);
                 files.add(fileName);
               }
               return FileVisitResult.CONTINUE;

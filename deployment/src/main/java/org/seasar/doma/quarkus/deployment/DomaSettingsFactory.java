@@ -18,7 +18,7 @@ import org.seasar.doma.quarkus.runtime.DomaSettings;
 
 public class DomaSettingsFactory {
 
-  private static final Logger LOGGER = Logger.getLogger(DomaSettingsFactory.class);
+  private static final Logger logger = Logger.getLogger(DomaSettingsFactory.class);
 
   private final DomaBuildTimeConfig buildTimeConfig;
   private final List<JdbcDataSourceBuildItem> dataSources;
@@ -46,7 +46,7 @@ public class DomaSettingsFactory {
     if (dataSources.isEmpty()) {
       throw new IllegalStateException("The quarkus.datasource is empty. Specify it.");
     }
-    LOGGER.debugf("settings: %s", settings);
+    logger.debugf("settings: %s", settings);
     return settings;
   }
 

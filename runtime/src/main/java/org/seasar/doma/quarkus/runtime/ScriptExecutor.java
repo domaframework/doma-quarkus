@@ -18,7 +18,7 @@ import org.seasar.doma.internal.util.ResourceUtil;
 @DefaultBean
 public class ScriptExecutor {
 
-  private static final Logger LOGGER = Logger.getLogger(ScriptExecutor.class.getName());
+  private static final Logger logger = Logger.getLogger(ScriptExecutor.class.getName());
 
   private final Map<String, String> namedSqlLoadScripts;
 
@@ -42,7 +42,7 @@ public class ScriptExecutor {
   }
 
   private void execute(DataSource dataSource, String path) throws Exception {
-    LOGGER.infof("Execute %s", path);
+    logger.infof("Execute %s", path);
     var sql = ResourceUtil.getResourceAsString(path);
     try (var connection = dataSource.getConnection()) {
       try (var statement = connection.createStatement()) {
