@@ -1,6 +1,7 @@
 package org.seasar.doma.quarkus.runtime;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.seasar.doma.jdbc.ClassHelper;
 import org.seasar.doma.jdbc.CommandImplementors;
@@ -21,7 +22,8 @@ import org.seasar.doma.jdbc.tx.TransactionManager;
 
 public class DomaConfig implements Config {
 
-  private final DataSource dataSource;
+  private final Supplier<String> dataSourceNameSupplier;
+  private final DataSourceResolver dataSourceResolver;
   private final Dialect dialect;
   private final SqlFileRepository sqlFileRepository;
   private final ScriptFileLoader scriptFileLoader;
@@ -37,14 +39,14 @@ public class DomaConfig implements Config {
   private final Commenter commenter;
   private final EntityListenerProvider entityListenerProvider;
   private final TransactionManager transactionManager;
-  private final String dataSourceName;
   private final int batchSize;
   private final int fetchSize;
   private final int maxRows;
   private final int queryTimeout;
 
   public DomaConfig(
-      DataSource dataSource,
+      Supplier<String> dataSourceNameSupplier,
+      DataSourceResolver dataSourceResolver,
       Dialect dialect,
       SqlFileRepository sqlFileRepository,
       ScriptFileLoader scriptFileLoader,
@@ -60,12 +62,12 @@ public class DomaConfig implements Config {
       Commenter commenter,
       EntityListenerProvider entityListenerProvider,
       TransactionManager transactionManager,
-      String dataSourceName,
       int batchSize,
       int fetchSize,
       int maxRows,
       int queryTimeout) {
-    this.dataSource = Objects.requireNonNull(dataSource);
+    this.dataSourceNameSupplier = Objects.requireNonNull(dataSourceNameSupplier);
+    this.dataSourceResolver = Objects.requireNonNull(dataSourceResolver);
     this.dialect = Objects.requireNonNull(dialect);
     this.sqlFileRepository = Objects.requireNonNull(sqlFileRepository);
     this.scriptFileLoader = Objects.requireNonNull(scriptFileLoader);
@@ -81,11 +83,18 @@ public class DomaConfig implements Config {
     this.commenter = Objects.requireNonNull(commenter);
     this.entityListenerProvider = Objects.requireNonNull(entityListenerProvider);
     this.transactionManager = Objects.requireNonNull(transactionManager);
-    this.dataSourceName = Objects.requireNonNull(dataSourceName);
     this.batchSize = batchSize;
     this.fetchSize = fetchSize;
     this.maxRows = maxRows;
     this.queryTimeout = queryTimeout;
+  }
+
+  public Supplier<String> getDataSourceNameSupplier() {
+    return dataSourceNameSupplier;
+  }
+
+  public DataSourceResolver getDataSourceResolver() {
+    return dataSourceResolver;
   }
 
   @Override
@@ -95,7 +104,7 @@ public class DomaConfig implements Config {
 
   @Override
   public DataSource getDataSource() {
-    return dataSource;
+    return dataSourceResolver.resolve(dataSourceNameSupplier.get());
   }
 
   @Override
@@ -170,7 +179,7 @@ public class DomaConfig implements Config {
 
   @Override
   public String getDataSourceName() {
-    return dataSourceName;
+    return dataSourceNameSupplier.get();
   }
 
   @Override
@@ -197,10 +206,11 @@ public class DomaConfig implements Config {
     return new Builder();
   }
 
-  public static Builder builder(Config config) {
+  public static Builder builder(DomaConfig config) {
     Objects.requireNonNull(config);
     var builder = new Builder();
-    builder.setDataSource(config.getDataSource());
+    builder.setDataSourceNameSupplier(config.getDataSourceNameSupplier());
+    builder.setDataSourceResolver(config.getDataSourceResolver());
     builder.setDialect(config.getDialect());
     builder.setSqlFileRepository(config.getSqlFileRepository());
     builder.setScriptFileLoader(config.getScriptFileLoader());
@@ -216,7 +226,6 @@ public class DomaConfig implements Config {
     builder.setCommenter(config.getCommenter());
     builder.setEntityListenerProvider(config.getEntityListenerProvider());
     builder.setTransactionManager(config.getTransactionManager());
-    builder.setDataSourceName(config.getDataSourceName());
     builder.setBatchSize(config.getBatchSize());
     builder.setFetchSize(config.getFetchSize());
     builder.setMaxRows(config.getMaxRows());
@@ -350,7 +359,8 @@ public class DomaConfig implements Config {
 
   public static class Builder {
 
-    private DataSource dataSource;
+    private Supplier<String> dataSourceNameSupplier;
+    private DataSourceResolver dataSourceResolver;
     private Dialect dialect;
     private SqlFileRepository sqlFileRepository;
     private ScriptFileLoader scriptFileLoader;
@@ -366,14 +376,18 @@ public class DomaConfig implements Config {
     private Commenter commenter;
     private EntityListenerProvider entityListenerProvider;
     private TransactionManager transactionManager;
-    private String dataSourceName;
     private int batchSize;
     private int fetchSize;
     private int maxRows;
     private int queryTimeout;
 
-    public Builder setDataSource(DataSource dataSource) {
-      this.dataSource = dataSource;
+    public Builder setDataSourceNameSupplier(Supplier<String> dataSourceNameSupplier) {
+      this.dataSourceNameSupplier = dataSourceNameSupplier;
+      return this;
+    }
+
+    public Builder setDataSourceResolver(DataSourceResolver dataSourceResolver) {
+      this.dataSourceResolver = dataSourceResolver;
       return this;
     }
 
@@ -452,11 +466,6 @@ public class DomaConfig implements Config {
       return this;
     }
 
-    public Builder setDataSourceName(String dataSourceName) {
-      this.dataSourceName = dataSourceName;
-      return this;
-    }
-
     public Builder setBatchSize(int batchSize) {
       this.batchSize = batchSize;
       return this;
@@ -479,7 +488,8 @@ public class DomaConfig implements Config {
 
     public DomaConfig build() {
       return new DomaConfig(
-          dataSource,
+          dataSourceNameSupplier,
+          dataSourceResolver,
           dialect,
           sqlFileRepository,
           scriptFileLoader,
@@ -495,7 +505,6 @@ public class DomaConfig implements Config {
           commenter,
           entityListenerProvider,
           transactionManager,
-          dataSourceName,
           batchSize,
           fetchSize,
           maxRows,

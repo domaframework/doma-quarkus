@@ -1,7 +1,6 @@
 package org.seasar.doma.quarkus.runtime;
 
 import io.quarkus.agroal.DataSource;
-import io.quarkus.agroal.runtime.DataSources;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.runtime.BeanContainerListener;
 import io.quarkus.runtime.LaunchMode;
@@ -55,11 +54,12 @@ public class DomaRecorder {
     Objects.requireNonNull(settings);
     return () -> {
       var core = Arc.container().instance(DomaConfig.Core.class).get();
-      var dataSourceName = settings.name;
-      var dataSource = DataSources.fromName(dataSourceName);
+      var dataSourceNameResolver = Arc.container().instance(DataSourceNameResolver.class).get();
+      var dataSourceResolver = Arc.container().instance(DataSourceResolver.class).get();
+      var candidateName = settings.name;
       return DomaConfig.builder(core)
-          .setDataSourceName(dataSourceName)
-          .setDataSource(dataSource)
+          .setDataSourceNameSupplier(() -> dataSourceNameResolver.resolve(candidateName))
+          .setDataSourceResolver(dataSourceResolver)
           .setDialect(settings.dialect.create())
           .setBatchSize(settings.batchSize)
           .setFetchSize(settings.fetchSize)

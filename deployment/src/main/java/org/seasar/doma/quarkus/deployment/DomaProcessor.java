@@ -31,6 +31,8 @@ import org.seasar.doma.DaoImplementation;
 import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.jdbc.criteria.Entityql;
 import org.seasar.doma.jdbc.criteria.NativeSql;
+import org.seasar.doma.quarkus.runtime.DataSourceNameResolver;
+import org.seasar.doma.quarkus.runtime.DataSourceResolver;
 import org.seasar.doma.quarkus.runtime.DomaConfig;
 import org.seasar.doma.quarkus.runtime.DomaProducer;
 import org.seasar.doma.quarkus.runtime.DomaRecorder;
@@ -54,7 +56,9 @@ class DomaProcessor {
         DomaProducer.class,
         JtaRequiresNewController.class,
         ScriptExecutor.class,
-        UnsupportedTransactionManager.class);
+        UnsupportedTransactionManager.class,
+        DataSourceNameResolver.DefaultDataSourceNameResolver.class,
+        DataSourceResolver.DefaultDataSourceResolver.class);
   }
 
   @BuildStep
