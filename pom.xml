@@ -67,21 +67,9 @@
     <profiles>
         <profile>
             <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <id>default</id>
-            <properties>
-                <doma.profile>default</doma.profile>
-            </properties>
-        </profile>
-        <profile>
-            <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <id>release</id>
-            <properties>
-                <doma.profile>release</doma.profile>
-            </properties>
             <build>
                 <plugins>
                     <plugin>

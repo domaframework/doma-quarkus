@@ -10,7 +10,6 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class HotReplacementTest {
@@ -44,7 +43,6 @@ public class HotReplacementTest {
   }
 
   @Test
-  @EnabledIfSystemProperty(named = "doma.profile", matches = "release")
   public void sql() {
     RestAssured.when().get("/hot/sql").then().body(is("select\n*\nfrom\nemployee\n"));
     runner.modifyResourceFile(
@@ -53,7 +51,6 @@ public class HotReplacementTest {
   }
 
   @Test
-  @EnabledIfSystemProperty(named = "doma.profile", matches = "release")
   public void script() {
     RestAssured.when().get("/hot/script").then().body(is("create table employee (\n  id int\n)\n"));
     runner.modifyResourceFile(
