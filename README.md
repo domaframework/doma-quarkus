@@ -1,6 +1,8 @@
 Quarkus Extension for Doma
 ==========================
 
+[![Build Status](https://github.com/domaframework/doma-quarkus/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/domaframework/doma-quarkus/actions?query=workflow%3A%22Java+CI+with+Maven%22)
+
 ## Introduction
 
 Quarkus Extension for Doma provides the following features:
