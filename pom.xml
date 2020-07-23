@@ -6,7 +6,7 @@
 
     <groupId>org.seasar.doma</groupId>
     <artifactId>doma-quarkus-parent</artifactId>
-    <version>1.0.0</version>
+    <version>999-SNAPSHOT</version>
     <name>Quarkus - Doma - Parent</name>
     <packaging>pom</packaging>
     <description>Quarkus Extension for Doma</description>
