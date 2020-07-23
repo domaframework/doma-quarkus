@@ -146,7 +146,7 @@ dependencies {
     <dependency>
         <groupId>org.seasar.doma</groupId>
         <artifactId>doma-quarkus-deployment</artifactId>
-        <version>0.5.0</version>
+        <version>1.0.0</version>
     </dependency>
     ...
 </dependencies>
