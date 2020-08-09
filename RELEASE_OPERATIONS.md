@@ -16,6 +16,8 @@ After success, run the Maven `version:commit` goal:
 $ ./mvnw versions:commit
 ```
 
+Modify versions in README.md.
+
 Commit the release version:
 
 ```
