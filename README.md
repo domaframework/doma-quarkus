@@ -135,13 +135,13 @@ dependencies {
     <dependency>
         <groupId>org.seasar.doma</groupId>
         <artifactId>doma-processor</artifactId>
-        <version>2.37.0</version>
+        <version>2.40.0</version>
         <scope>provided</scope>
     </dependency>
     <dependency>
         <groupId>org.seasar.doma</groupId>
         <artifactId>doma-core</artifactId>
-        <version>2.37.0</version>
+        <version>2.40.0</version>
     </dependency>
     <dependency>
         <groupId>org.seasar.doma</groupId>
