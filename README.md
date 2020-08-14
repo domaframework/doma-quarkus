@@ -124,7 +124,7 @@ and includes them into your native image without additional configurations.
 dependencies {
     annotationProcessor "org.seasar.doma:doma-processor:2.40.0"
     implementation "org.seasar.doma:doma-core:2.40.0"
-    implementation "org.seasar.doma:doma-quarkus-deployment:1.0.0"
+    implementation "org.seasar.doma:doma-quarkus-deployment:1.0.1"
 }
 ```
 
@@ -146,7 +146,7 @@ dependencies {
     <dependency>
         <groupId>org.seasar.doma</groupId>
         <artifactId>doma-quarkus-deployment</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     ...
 </dependencies>
