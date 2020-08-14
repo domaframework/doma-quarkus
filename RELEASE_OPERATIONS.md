@@ -21,6 +21,7 @@ Modify versions in README.md.
 Commit the release version:
 
 ```
+$ git add --all
 $ git commit -m "Release v1.0.0"
 ```
 
@@ -79,6 +80,7 @@ $ ./mvnw versions:commit
 Commit and push the next version:
 
 ```
+$ git add --all
 $ git commit -m "Next version [skip ci]"
 $ git push origin master
 ```
