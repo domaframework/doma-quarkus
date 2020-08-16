@@ -1,10 +1,6 @@
 Quarkus Extension for Doma
 ==========================
 
-[![Build Status](https://github.com/domaframework/doma-quarkus/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/domaframework/doma-quarkus/actions?query=workflow%3A%22Java+CI+with+Maven%22)
-
-## Introduction
-
 Quarkus Extension for Doma provides the following features:
 
 - Hot reloading
@@ -13,6 +9,10 @@ Quarkus Extension for Doma provides the following features:
 - Configuration
 - Multiple Datasources
 - Support for native images
+
+[![Build Status](https://github.com/domaframework/doma-quarkus/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/domaframework/doma-quarkus/actions?query=workflow%3A%22Java+CI+with+Maven%22)
+[![Google Group : doma-user](https://img.shields.io/badge/Google%20Group-doma--user-orange.svg)](https://groups.google.com/g/doma-user)
+[![Twitter](https://img.shields.io/badge/twitter-@domaframework-blue.svg?style=flat)](https://twitter.com/domaframework)
 
 ### Hot reloading
 
