@@ -14,7 +14,7 @@
     <name>Quarkus - Doma - Deployment</name>
 
     <properties>
-        <maven.surefire.version>3.0.0-M4</maven.surefire.version>
+        <maven.surefire.version>3.0.0-M5</maven.surefire.version>
     </properties>
 
     <dependencies>
