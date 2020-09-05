@@ -4,3 +4,7 @@ deployment/target
 runtime/target
 *.iml
 .sdkmanrc
+/deployment/pom.xml.releaseBackup
+/runtime/pom.xml.releaseBackup
+/pom.xml.releaseBackup
+/release.properties
