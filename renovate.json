@@ -1,8 +1,5 @@
 {
   "extends": [
-    "config:base"
-  ],
-  "labels": [
-    "dependencies"
+    "github>domaframework/renovate-config"
   ]
 }
