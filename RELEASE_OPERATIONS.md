@@ -13,23 +13,16 @@ $ ./mvnw --batch-mode -DreleaseVersion=1.0.0 -DdevelopmentVersion=999-SNAPSHOT r
 The value of `releaseVersion` is decided by the draft name of
 [Releases](https://github.com/domaframework/doma-quarkus/releases).
 
-
 ## Build with GitHub Action
 
 The GitHub Action workflow [Java CI with Maven](.github/workflows/ci.yml) handles the above push event.
 
 The workflow builds the "doma-quarkus-parent", the "doma-quarkus-deployment" and the "doma-quarkus" artifacts
-and pushes them to Maven Central[Sonatype OSSRH](https://central.sonatype.org/pages/ossrh-guide.html).
+and pushes them to [Sonatype OSSRH](https://central.sonatype.org/pages/ossrh-guide.html).
 
 ## Publish artifacts to Maven Central
 
-Follow the instructions below:
-
-- Open [Nexus Repository Manager](https://oss.sonatype.org/).
-- Log in to the manager.
-- Select "Staging Repositories" from the side menu.
-- Check the repository of Doma.
-- Push the "Release" button.
+The Nexus Staging Maven Plugin handles this process.
 
 In a few minutes, all artifacts are copied to the [Maven Central Repository](https://repo1.maven.org/).
 
