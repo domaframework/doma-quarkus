@@ -7,7 +7,7 @@ Run the Maven `release:prepare` goal:
 ```
 $ git checkout master
 $ git pull
-$ ./mvnw --batch-mode -DdryRun=true -DreleaseVersion=1.0.0 -DdevelopmentVersion=999-SNAPSHOT release:clean release:prepare
+$ ./mvnw --batch-mode -DreleaseVersion=1.0.0 -DdevelopmentVersion=999-SNAPSHOT release:clean release:prepare
 ```
 
 The value of `releaseVersion` is decided by the draft name of
