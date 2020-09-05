@@ -116,6 +116,11 @@ Nativeql inventoryNativeql;
 Our extension recognizes reflective classes and resources,
 and includes them into your native image without additional configurations.
 
+## Supported Java version
+
+Quarkus supports Java 8 or Java 11+ 
+but Quarkus Extension for Doma requires Java 11+.
+
 ## How to use
 
 ### Gradle
