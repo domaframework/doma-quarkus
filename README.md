@@ -1,7 +1,7 @@
 Quarkus Extension for Doma
 ==========================
 
-Quarkus Extension for Doma provides the following features:
+[Quarkus](https://quarkus.io/) Extension for [Doma](https://github.com/domaframework/doma) provides the following features:
 
 - Hot reloading
 - Automatic bean register
