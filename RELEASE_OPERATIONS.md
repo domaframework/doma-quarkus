@@ -1,6 +1,10 @@
 # Release Operations
 
-## Update the release version
+## Update README.md
+
+Modify version numbers.
+
+## Run the Maven release:prepare goal
 
 Run the Maven `release:prepare` goal:
 
@@ -13,27 +17,26 @@ $ ./mvnw --batch-mode -DreleaseVersion=1.0.0 -DdevelopmentVersion=999-SNAPSHOT r
 The value of `releaseVersion` is decided by the draft name of
 [Releases](https://github.com/domaframework/doma-quarkus/releases).
 
-## Build with GitHub Action
+## Build and Publish with GitHub Action
 
-The GitHub Action workflow [Java CI with Maven](.github/workflows/ci.yml) handles the above push event.
+(No operation required)
 
-The workflow builds the "doma-quarkus-parent", the "doma-quarkus-deployment" and the "doma-quarkus" artifacts
-and pushes them to [Sonatype OSSRH](https://central.sonatype.org/pages/ossrh-guide.html).
+The GitHub Action workflow [Java CI with Gradle](.github/workflows/ci.yml) handles the above push event.
 
-## Publish artifacts to Maven Central
+The workflow builds the "doma-quarkus", the "doma-quarkus-deployment",
+and the "doma-quarkus-parent" artifacts and publishes them
+to the [Maven Central Repository](https://repo1.maven.org/).
 
-The Nexus Staging Maven Plugin handles this process.
+After about 30 minutes, each artifact is listed in the following directories:
 
-In a few minutes, all artifacts are copied to the [Maven Central Repository](https://repo1.maven.org/).
+- https://repo1.maven.org/maven2/org/seasar/doma/doma-quarkus/
+- https://repo1.maven.org/maven2/org/seasar/doma/doma-quarkus-deployment/
+- https://repo1.maven.org/maven2/org/seasar/doma/doma-quarkus-parent/
 
 ## Publish release notes
 
 Open [Releases](https://github.com/domaframework/doma-quarkus/releases)
 and publish release notes.
-
-## Update README.md.
-
-Modify version numbers.
 
 ## Announce the release
 
