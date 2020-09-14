@@ -3,7 +3,7 @@ package org.seasar.doma.quarkus.deployment;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-import io.quarkus.agroal.deployment.JdbcDataSourceBuildItem;
+import io.quarkus.agroal.spi.JdbcDataSourceBuildItem;
 import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import java.nio.file.Files;
