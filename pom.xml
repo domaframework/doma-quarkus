@@ -4,7 +4,7 @@
 
     <groupId>org.seasar.doma</groupId>
     <artifactId>doma-quarkus-parent</artifactId>
-    <version>999-SNAPSHOT</version>
+    <version>1.0.4</version>
     <name>Quarkus - Doma - Parent</name>
     <packaging>pom</packaging>
     <description>Quarkus Extension for Doma</description>
@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:domaframework/doma-quarkus.git</connection>
         <developerConnection>scm:git:git@github.com:domaframework/doma-quarkus.git</developerConnection>
         <url>https://github.com/domaframework/doma-quarkus</url>
-      <tag>HEAD</tag>
+      <tag>v1.0.4</tag>
   </scm>
 
     <properties>
