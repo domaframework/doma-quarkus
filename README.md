@@ -127,34 +127,57 @@ but Quarkus Extension for Doma requires Java 11+.
 
 ```groovy
 dependencies {
-    annotationProcessor "org.seasar.doma:doma-processor:2.41.0"
-    implementation "org.seasar.doma:doma-core:2.41.0"
-    implementation "org.seasar.doma:doma-quarkus-deployment:1.0.3"
+    annotationProcessor "org.seasar.doma:doma-processor:2.42.0"
+    implementation "org.seasar.doma:doma-core:2.42.0"
+    implementation "org.seasar.doma:doma-quarkus-deployment:1.0.4"
 }
 ```
 
 ### Maven
 
 ```xml
+...
+<properties>
+    <org.seasar.doma.version>2.42.0</org.seasar.doma.version>
+    <org.seasar.doma-quarkus.version>1.0.4</org.seasar.doma-quarkus.version>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+</properties>
+...
 <dependencies>
     <dependency>
         <groupId>org.seasar.doma</groupId>
-        <artifactId>doma-processor</artifactId>
-        <version>2.41.0</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.seasar.doma</groupId>
         <artifactId>doma-core</artifactId>
-        <version>2.41.0</version>
+        <version>${org.seasar.doma.version}</version>
     </dependency>
     <dependency>
         <groupId>org.seasar.doma</groupId>
         <artifactId>doma-quarkus-deployment</artifactId>
-        <version>1.0.3</version>
+        <version>${org.seasar.doma-quarkus.version}</version>
     </dependency>
-    ...
 </dependencies>
+...
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${compiler-plugin.version}</version>
+            <configuration>
+                <source>11</source>
+                <target>11</target>
+                <!-- the parameters=true option is critical so that RESTEasy works fine -->
+                <parameters>true</parameters>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.seasar.doma</groupId>
+                        <artifactId>doma-processor</artifactId>
+                        <version>${doma.version}</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
 ```
 
 ## Sample project
