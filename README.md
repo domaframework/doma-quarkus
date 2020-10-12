@@ -96,7 +96,7 @@ Config defaultConfig;
 Entityql defaultEntityql;
 
 @Inejct
-Nativeql defaultNativeql;
+NativeSql defaultNativeSql;
 
 @Inejct
 @DataSource("inventory")
@@ -108,7 +108,7 @@ Entityql inventoryEntityql;
 
 @Inejct
 @DataSource("inventory")
-Nativeql inventoryNativeql;
+NativeSql inventoryNativeSql;
 ```
 
 ### Support for native images
