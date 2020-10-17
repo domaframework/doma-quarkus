@@ -51,9 +51,6 @@ public class DomaBuildTimeConfig {
   @ConfigItem(defaultValue = "none")
   public SqlLogType exceptionSqlLogType;
 
-  /** The log configuration. */
-  @ConfigItem public LogBuildTimeConfig log;
-
   @ConfigGroup
   public static class DataSourceBuildTimeConfig {
     /**
@@ -128,31 +125,6 @@ public class DomaBuildTimeConfig {
     }
   }
 
-  @ConfigGroup
-  public static class LogBuildTimeConfig {
-
-    /** Shows SQL logs. */
-    @ConfigItem public boolean sql;
-
-    /** Shows DAO logs. */
-    @ConfigItem public boolean dao;
-
-    /** Shows the logs of the failure to close JDBC resource. */
-    @ConfigItem public boolean closingFailure;
-
-    @Override
-    public String toString() {
-      return "DomaConfigurationLog{"
-          + "sql="
-          + sql
-          + ", dao="
-          + dao
-          + ", closingFailure="
-          + closingFailure
-          + '}';
-    }
-  }
-
   @Override
   public String toString() {
     return "DomaBuildTimeConfig{"
@@ -166,8 +138,6 @@ public class DomaBuildTimeConfig {
         + naming
         + ", exceptionSqlLogType="
         + exceptionSqlLogType
-        + ", log="
-        + log
         + '}';
   }
 }

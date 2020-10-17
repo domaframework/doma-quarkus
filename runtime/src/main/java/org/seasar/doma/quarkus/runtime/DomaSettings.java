@@ -27,7 +27,6 @@ public class DomaSettings {
   public NamingType naming;
   public SqlLogType exceptionSqlLogType;
   public List<DataSourceSettings> dataSources;
-  public LogSettings log;
 
   public Map<String, String> asNamedSqlLoadScripts() {
     return dataSources.stream()
@@ -66,36 +65,6 @@ public class DomaSettings {
           + ", sqlLoadScript='"
           + sqlLoadScript
           + '\''
-          + '}';
-    }
-  }
-
-  public static class LogSettings {
-    public boolean sql;
-    public boolean dao;
-    public boolean closingFailure;
-
-    public LogSettings() {}
-
-    public LogSettings(boolean sql, boolean dao, boolean closingFailure) {
-      this.sql = sql;
-      this.dao = dao;
-      this.closingFailure = closingFailure;
-    }
-
-    public LogPreferences asLogPreferences() {
-      return new LogPreferences(sql, dao, closingFailure);
-    }
-
-    @Override
-    public String toString() {
-      return "LogSettings{"
-          + "sql="
-          + sql
-          + ", dao="
-          + dao
-          + ", closingFailure="
-          + closingFailure
           + '}';
     }
   }
@@ -165,8 +134,6 @@ public class DomaSettings {
         + exceptionSqlLogType
         + ", dataSources="
         + dataSources
-        + ", log="
-        + log
         + '}';
   }
 }
