@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.seasar.doma.jdbc.Config;
 import org.seasar.doma.jdbc.Naming;
 import org.seasar.doma.jdbc.SqlLogType;
-import org.seasar.doma.quarkus.runtime.DomaLogger;
 
 public class ApplicationPropertiesTest {
 
@@ -47,7 +46,6 @@ public class ApplicationPropertiesTest {
                           "application.properties"));
 
   @Inject Config config;
-  @Inject DomaLogger domaLogger;
 
   @Test
   public void test() {
@@ -61,9 +59,5 @@ public class ApplicationPropertiesTest {
     assertEquals(20, config.getFetchSize());
     assertEquals(30, config.getMaxRows());
     assertEquals(40, config.getQueryTimeout());
-
-    assertTrue(domaLogger.getLogPreferences().isSql());
-    assertTrue(domaLogger.getLogPreferences().isDao());
-    assertTrue(domaLogger.getLogPreferences().isClosingFailure());
   }
 }

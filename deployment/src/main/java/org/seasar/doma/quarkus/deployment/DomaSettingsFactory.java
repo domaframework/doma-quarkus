@@ -42,7 +42,6 @@ public class DomaSettingsFactory {
     settings.naming = buildTimeConfig.naming;
     settings.exceptionSqlLogType = buildTimeConfig.exceptionSqlLogType;
     settings.dataSources = dataSources();
-    settings.log = log();
     if (dataSources.isEmpty()) {
       throw new IllegalStateException("The quarkus.datasource is empty. Specify it.");
     }
@@ -146,10 +145,5 @@ public class DomaSettingsFactory {
         return null;
       }
     }
-  }
-
-  private DomaSettings.LogSettings log() {
-    var log = buildTimeConfig.log;
-    return new DomaSettings.LogSettings(log.sql, log.dao, log.closingFailure);
   }
 }

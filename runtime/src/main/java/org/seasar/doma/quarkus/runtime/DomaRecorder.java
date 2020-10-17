@@ -46,7 +46,6 @@ public class DomaRecorder {
       producer.setNaming(domaSettings.naming.naming());
       producer.setExceptionSqlLogType(domaSettings.exceptionSqlLogType);
       producer.setNamedSqlLoadScripts(domaSettings.asNamedSqlLoadScripts());
-      producer.setLogPreferences(domaSettings.log.asLogPreferences());
     };
   }
 

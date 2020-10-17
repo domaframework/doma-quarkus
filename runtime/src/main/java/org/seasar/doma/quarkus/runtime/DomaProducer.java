@@ -18,6 +18,7 @@ import org.seasar.doma.jdbc.Naming;
 import org.seasar.doma.jdbc.QueryImplementors;
 import org.seasar.doma.jdbc.RequiresNewController;
 import org.seasar.doma.jdbc.ScriptFileLoader;
+import org.seasar.doma.jdbc.Slf4jJdbcLogger;
 import org.seasar.doma.jdbc.SqlFileRepository;
 import org.seasar.doma.jdbc.SqlLogType;
 import org.seasar.doma.jdbc.UnknownColumnHandler;
@@ -31,7 +32,6 @@ public class DomaProducer {
   private volatile Naming naming;
   private volatile SqlLogType exceptionSqlLogType;
   private volatile Map<String, String> namedSqlLoadScripts;
-  private volatile LogPreferences logPreferences;
 
   public void setSqlFileRepository(SqlFileRepository sqlFileRepository) {
     this.sqlFileRepository = Objects.requireNonNull(sqlFileRepository);
@@ -54,10 +54,6 @@ public class DomaProducer {
     this.namedSqlLoadScripts = Collections.unmodifiableMap(namedSqlLoadScripts);
   }
 
-  public void setLogPreferences(LogPreferences logPreferences) {
-    this.logPreferences = Objects.requireNonNull(logPreferences);
-  }
-
   @Singleton
   @DefaultBean
   SqlFileRepository sqlFileRepository() {
@@ -72,8 +68,8 @@ public class DomaProducer {
 
   @Singleton
   @DefaultBean
-  DomaLogger jdbcLogger(LogPreferences logPreferences) {
-    return new DomaLogger(logPreferences);
+  Slf4jJdbcLogger jdbcLogger() {
+    return new Slf4jJdbcLogger();
   }
 
   @Singleton
@@ -134,11 +130,6 @@ public class DomaProducer {
   @Named("doma.namedSqlLoadScripts")
   public Map<String, String> getNamedSqlLoadScripts() {
     return namedSqlLoadScripts;
-  }
-
-  @Singleton
-  LogPreferences logPreferences() {
-    return Objects.requireNonNull(logPreferences);
   }
 
   @Singleton

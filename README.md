@@ -40,9 +40,6 @@ quarkus.doma.fetch-size=50
 quarkus.doma.max-rows=500
 quarkus.doma.query-timeout=5000
 quarkus.doma.sql-load-script=import.sql
-quarkus.doma.log.sql=false
-quarkus.doma.log.dao=false
-quarkus.doma.log.closing-failure=false
 ```
 
 The above properties are all optional.
