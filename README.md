@@ -124,9 +124,9 @@ but Quarkus Extension for Doma requires Java 11+.
 
 ```groovy
 dependencies {
-    annotationProcessor "org.seasar.doma:doma-processor:2.42.0"
-    implementation "org.seasar.doma:doma-core:2.42.0"
-    implementation "org.seasar.doma:doma-quarkus-deployment:1.0.4"
+    annotationProcessor "org.seasar.doma:doma-processor:2.44.0"
+    implementation "org.seasar.doma:doma-core:2.44.0"
+    implementation "org.seasar.doma:doma-quarkus-deployment:1.1.0"
 }
 ```
 
@@ -135,8 +135,8 @@ dependencies {
 ```xml
 ...
 <properties>
-    <org.seasar.doma.version>2.42.0</org.seasar.doma.version>
-    <org.seasar.doma-quarkus.version>1.0.4</org.seasar.doma-quarkus.version>
+    <org.seasar.doma.version>2.44.0</org.seasar.doma.version>
+    <org.seasar.doma-quarkus.version>1.1.0</org.seasar.doma-quarkus.version>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
 </properties>
 ...
