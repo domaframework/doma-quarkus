@@ -1,6 +1,14 @@
 Quarkus Extension for Doma
 ==========================
 
+## Notice
+
+THIS REPOSITORY IS NOW FROZEN.
+
+The new version is here: https://github.com/quarkiverse/quarkiverse-doma
+
+## Overview
+
 [Quarkus](https://quarkus.io/) Extension for [Doma](https://github.com/domaframework/doma) provides the following features:
 
 - Hot reloading
